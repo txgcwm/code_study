@@ -1,0 +1,99 @@
+错误一：
+
+make时的出错信息：
+
+/srv/drivers/scull/access.c: In function ‘scull_w_release’:
+/srv/drivers/scull/access.c:165: error: ‘TASK_INTERRUPTIBLE’ undeclared (first use in this function)
+
+解决措施：
+
+在原文件中添加头文件#include <linux/sched.h>。
+
+
+
+错误二：
+
+在make的时候打印如下信息：
+
+root@txgcwm:/srv/drivers/scull# make
+make -C /lib/modules/2.6.35-32-generic/build M=/srv/drivers/scull modules
+make[1]: Entering directory `/usr/src/linux-headers-2.6.35-32-generic'
+  CC [M]  /srv/drivers/scull/scull.o
+  CC [M]  /srv/drivers/scull/pipe.o
+  CC [M]  /srv/drivers/scull/access.o
+/srv/drivers/scull/access.c: In function ‘scull_u_open’:
+/srv/drivers/scull/access.c:77: error: ‘struct task_struct’ has no member named ‘uid’
+/srv/drivers/scull/access.c:78: error: ‘struct task_struct’ has no member named ‘euid’
+/srv/drivers/scull/access.c:86: error: ‘struct task_struct’ has no member named ‘uid’
+/srv/drivers/scull/access.c: In function ‘scull_w_available’:
+/srv/drivers/scull/access.c:126: error: ‘struct task_struct’ has no member named ‘uid’
+/srv/drivers/scull/access.c:127: error: ‘struct task_struct’ has no member named ‘euid’
+/srv/drivers/scull/access.c: In function ‘scull_w_open’:
+/srv/drivers/scull/access.c:144: error: ‘struct task_struct’ has no member named ‘uid’
+make[2]: *** [/srv/drivers/scull/access.o] Error 1
+make[1]: *** [_module_/srv/drivers/scull] Error 2
+make[1]: Leaving directory `/usr/src/linux-headers-2.6.35-32-generic'
+make: *** [all] Error 2
+
+源码部分：
+
+static int scull_u_open(struct inode *inode, struct file *filp)
+{
+	struct scull_dev *dev = &scull_u_device; 
+
+	spin_lock(&scull_u_lock);
+	if (scull_u_count && 
+			(scull_u_owner != current->uid) && 
+			(scull_u_owner != current->euid) && 
+			!capable(CAP_DAC_OVERRIDE)) 
+	{ 
+		spin_unlock(&scull_u_lock);
+		return -EBUSY;   
+	}
+	......
+
+解决措施：
+
+static int scull_u_open(struct inode *inode, struct file *filp)
+{
+	struct scull_dev *dev = &scull_u_device; 
+
+	spin_lock(&scull_u_lock);
+	if (scull_u_count && 
+			(scull_u_owner != current->cred->uid) && 
+			(scull_u_owner != current->cred->euid) && 
+			!capable(CAP_DAC_OVERRIDE)) 
+
+错误三
+
+出错信息：
+
+root@txgcwm:/srv/drivers/scull# make
+make -C /lib/modules/2.6.35-32-generic/build M=/srv/drivers/scull LDDINC=/srv/drivers/scull/../include modules
+make[1]: Entering directory `/usr/src/linux-headers-2.6.35-32-generic'
+scripts/Makefile.build:49: *** CFLAGS was changed in "/srv/drivers/scull/Makefile". Fix it to use EXTRA_CFLAGS.  Stop.
+make[1]: *** [_module_/srv/drivers/scull] Error 2
+make[1]: Leaving directory `/usr/src/linux-headers-2.6.35-32-generic'
+make: *** [modules] Error 2
+
+解决措施：
+
+在makefile中将CFLAGS改成EXTRA_CFLAGS
+
+错误四
+
+/srv/drivers/short/short.c: In function ‘short_selfprobe’:
+/srv/drivers/short/short.c:515: error: ‘SA_INTERRUPT’ undeclared (first use in this function)
+/srv/drivers/short/short.c:515: error: (Each undeclared identifier is reported only once
+/srv/drivers/short/short.c:515: error: for each function it appears in.)
+
+解决措施：
+SA_INTERRUPT 已经不支持了，用 IRQF_SHARED
+
+错误五
+
+/srv/drivers/short/short.c: In function ‘short_selfprobe’:
+/srv/drivers/short/short.c:515: warning: passing argument 2 of ‘request_irq’ from incompatible pointer type
+
+解决措施：
+irqreturn_t short_probing(int irq, void *dev_id, struct pt_regs *regs)更改为irqreturn_t short_probing(int irq, void *dev_id)
