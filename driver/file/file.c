@@ -67,21 +67,22 @@ static int __init file_init(void)
 	list_for_each_entry(mod,THIS_MODULE->list.prev,list) {  
 		if(strcmp(mod->name, "target")==0) {   
   
-                        // 打印target的模块名、模块状态、引用计数  
-                        printk(KERN_ALERT"name:%s state:%d refcnt:%u ",mod->name,mod->state,module_refcount(mod));  
+			// 打印target的模块名、模块状态、引用计数  
+			printk(KERN_ALERT"name:%s state:%d refcnt:%u ",mod->name,mod->state,module_refcount(mod));  
   
-                        // 打印出所有依赖target的模块名  
-                        if(!list_empty(&mod->modules_which_use_me)) {   
-                                list_for_each_entry(relate,&mod->modules_which_use_me,modules_which_use_me)  
-                                        printk(KERN_ALERT"%s ",relate->name);  
-                        } else  
-                                printk(KERN_ALERT"used by NULL\n");  
+			// 打印出所有依赖target的模块名  
+			if(!list_empty(&mod->modules_which_use_me)) {   
+				list_for_each_entry(relate,&mod->modules_which_use_me,modules_which_use_me)  
+				printk(KERN_ALERT"%s ",relate->name);  
+			} else {  
+				printk(KERN_ALERT"used by NULL\n");  
+  			}
+
+			// 把target的引用计数置为0  
+			for_each_possible_cpu(cpu)
+			local_set(__module_ref_addr(mod,cpu),0);  
   
-                        // 把target的引用计数置为0  
-                        for_each_possible_cpu(cpu)  
-                                local_set(__module_ref_addr(mod,cpu),0);  
-  
-                        // 再看看target的名称、状态、引用计数  
+			// 再看看target的名称、状态、引用计数  
 			printk(KERN_ALERT"name:%s state:%d refcnt:%u\n",mod->name,mod->state,module_refcount(mod));  
 		}  
 	}  
