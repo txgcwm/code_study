@@ -1,0 +1,9 @@
+[submodule "resource/denjones.github.com"]
+	path = resource/denjones.github.com
+	url = https://github.com/denjones/denjones.github.com.git
+[submodule "resource/sphinxbase"]
+	path = resource/sphinxbase
+	url = https://github.com/cmusphinx/sphinxbase.git
+[submodule "resource/DeepLearningTutorials"]
+	path = resource/DeepLearningTutorials
+	url = https://github.com/lisa-lab/DeepLearningTutorials.git
