@@ -1,11 +1,10 @@
-#include <sys/socket.h>
-#include <sys/select.h>
-#include <sys/time.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
+#include <sys/socket.h>
+#include <poll.h>
+#include <sys/time.h>
+#include <netinet/in.h>
 
 typedef struct _CLIENT {
 	int fd;
@@ -17,17 +16,14 @@ typedef struct _CLIENT {
 //最多处理的connect  
 #define BACKLOG 5
 
-//最多处理的connect  
-CLIENT client[BACKLOG];
-
 //当前的连接数  
 int currentClient = 0;
 
 //数据接受 buf  
 #define REVLEN 10
 char recvBuf[REVLEN];
-//显示当前的connection  
-void showClient();
+
+#define OPEN_MAX 1024
 
 int main(int argc, char **argv)
 {
@@ -35,13 +31,11 @@ int main(int argc, char **argv)
 	int recvLen = 0;
 	fd_set readfds, writefds;
 	int sockListen, sockSvr, sockMax;
-	struct timeval timeout;
+	int timeout;
 	struct sockaddr_in server_addr;
 	struct sockaddr_in client_addr;
 
-	for (i = 0; i < BACKLOG; i++) {
-		client[i].fd = -1;
-	}
+	struct pollfd clientfd[OPEN_MAX];
 
 	//socket  
 	if ((sockListen = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
@@ -66,29 +60,20 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
-	for (i = 0; i < BACKLOG; i++) {
-		client[i].fd = -1;
+	//clientfd 初始化  
+	clientfd[0].fd = sockListen;
+	clientfd[0].events = POLLIN;	//POLLRDNORM;  
+	sockMax = 0;
+	for (i = 1; i < OPEN_MAX; i++) {
+		clientfd[i].fd = -1;
 	}
 
 	//select  
 	while (1) {
-		FD_ZERO(&readfds);
-		FD_SET(sockListen, &readfds);
-		sockMax = sockListen;
-
-		//加入client  
-		for (i = 0; i < BACKLOG; i++) {
-			if (client[i].fd > 0) {
-				FD_SET(client[i].fd, &readfds);
-				if (sockMax < client[i].fd)
-					sockMax = client[i].fd;
-			}
-		}
-
-		timeout.tv_sec = 3;
-		timeout.tv_usec = 0;
+		timeout = 3000;
 		//select  
-		ret = select((int)sockMax + 1, &readfds, NULL, NULL, &timeout);
+		ret = poll(clientfd, sockMax + 1, timeout);
+
 		if (ret < 0) {
 			printf("select error\n");
 			break;
@@ -96,23 +81,50 @@ int main(int argc, char **argv)
 			printf("timeout ...\n");
 			continue;
 		}
-		printf("test111\n");
 
+		if (clientfd[0].revents & POLLIN)	//POLLRDNORM  
+		{
+			sockSvr = accept(sockListen, NULL, NULL);	//(struct sockaddr*)&client_addr  
+
+			if (sockSvr == -1) {
+				printf("accpet error\n");
+			} else {
+				currentClient++;
+			}
+
+			for (i = 0; i < OPEN_MAX; i++) {
+				if (clientfd[i].fd < 0) {
+					clientfd[i].fd = sockSvr;
+					break;
+				}
+			}
+			if (i == OPEN_MAX) {
+				printf("too many connects\n");
+				return -1;
+			}
+			clientfd[i].events = POLLIN;	//POLLRDNORM;  
+			if (i > sockMax)
+				sockMax = i;
+		}
 		//读取数据  
-		for (i = 0; i < BACKLOG; i++) {
-			if (client[i].fd > 0 && FD_ISSET(client[i].fd, &readfds)) {
+		for (i = 1; i <= sockMax; i++) {
+			if (clientfd[i].fd < 0)
+				continue;
+
+			if (clientfd[i].revents & (POLLIN | POLLERR))	//POLLRDNORM  
+			{
 				if (recvLen != REVLEN) {
 					while (1) {
 						//recv数据  
 						ret =
-							recv(client[i].fd, (char *)recvBuf + recvLen,
+							recv(clientfd[i].fd, (char *)recvBuf + recvLen,
 								 REVLEN - recvLen, 0);
 						if (ret == 0) {
-							client[i].fd = -1;
+							clientfd[i].fd = -1;
 							recvLen = 0;
 							break;
 						} else if (ret < 0) {
-							client[i].fd = -1;
+							clientfd[i].fd = -1;
 							recvLen = 0;
 							break;
 						}
@@ -122,8 +134,7 @@ int main(int argc, char **argv)
 							continue;
 						} else {
 							//数据接受完毕  
-							printf("%s, buf = %s\n",
-								   inet_ntoa(client[i].addr.sin_addr), recvBuf);
+							printf("buf = %s\n", recvBuf);
 							//close(client[i].fd);  
 							//client[i].fd = -1;  
 							recvLen = 0;
@@ -133,43 +144,7 @@ int main(int argc, char **argv)
 				}
 			}
 		}
-
-		//如果可读  
-		if (FD_ISSET(sockListen, &readfds)) {
-			printf("isset\n");
-			sockSvr = accept(sockListen, NULL, NULL);	//(struct sockaddr*)&client_addr  
-
-			if (sockSvr == -1) {
-				printf("accpet error\n");
-			} else {
-				currentClient++;
-			}
-
-			for (i = 0; i < BACKLOG; i++) {
-				if (client[i].fd < 0) {
-					client[i].fd = sockSvr;
-					client[i].addr = client_addr;
-					printf("You got a connection from %s \n",
-						   inet_ntoa(client[i].addr.sin_addr));
-					break;
-				}
-			}
-			//close(sockListen);  
-		}
 	}
 
-	printf("test\n");
 	return 0;
-}
-
-//显示当前的connection  
-void showClient()
-{
-	int i;
-	printf("client count = %d\n", currentClient);
-
-	for (i = 0; i < BACKLOG; i++) {
-		printf("[%d] = %d", i, client[i].fd);
-	}
-	printf("\n");
 }
