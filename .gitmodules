@@ -7,3 +7,6 @@
 [submodule "resource/DeepLearningTutorials"]
 	path = resource/DeepLearningTutorials
 	url = https://github.com/lisa-lab/DeepLearningTutorials.git
+[submodule "resource/Libnet-1.1-tutorial-examples"]
+	path = resource/Libnet-1.1-tutorial-examples
+	url = https://github.com/repolho/Libnet-1.1-tutorial-examples.git
