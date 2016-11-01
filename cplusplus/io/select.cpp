@@ -57,8 +57,9 @@ int main(int argc, char **argv)
 		for (i = 0; i < BACKLOG; i++) {
 			if (client[i].fd > 0) {
 				FD_SET(client[i].fd, &readfds);
-				if (sockMax < client[i].fd)
+				if (sockMax < client[i].fd) {
 					sockMax = client[i].fd;
+				}
 			}
 		}
 
@@ -78,8 +79,7 @@ int main(int argc, char **argv)
 			if (client[i].fd > 0 && FD_ISSET(client[i].fd, &readfds)) {
 				if (recvLen != REVLEN) {
 					while (1) {
-						ret = recv(client[i].fd, (char *)recvBuf + recvLen,
-								 REVLEN - recvLen, 0);
+						ret = recv(client[i].fd, (char *)recvBuf + recvLen, REVLEN - recvLen, 0);
 						if (ret == 0) {
 							client[i].fd = -1;
 							recvLen = 0;
@@ -91,12 +91,11 @@ int main(int argc, char **argv)
 						}
 
 						recvLen = recvLen + ret;
+
 						if (recvLen < REVLEN) {
 							continue;
 						} else {
 							printf("%s, buf = %s\n", inet_ntoa(client[i].addr.sin_addr), recvBuf);
-							//close(client[i].fd);  
-							//client[i].fd = -1;  
 							recvLen = 0;
 							break;
 						}
@@ -106,8 +105,7 @@ int main(int argc, char **argv)
 		}
 
 		if (FD_ISSET(sockListen, &readfds)) {
-			printf("isset\n");
-			sockSvr = accept(sockListen, NULL, NULL);	//(struct sockaddr*)&client_addr  
+			sockSvr = accept(sockListen, NULL, NULL);
 			if (sockSvr == -1) {
 				printf("accpet error\n");
 			} else {
