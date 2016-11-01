@@ -26,7 +26,7 @@ int AddSock2EpollEvent(int epollfd, int addfd)
 	event.events = EPOLLIN | EPOLLET;
 
 	if(epoll_ctl(epollfd, EPOLL_CTL_ADD, addfd, &event) < 0) {
-		printf("epoll add fail : fd = %d\n", sockListen);
+		printf("epoll add fd(%d) fail!\n", addfd);
 		return -1;
 	}
 
@@ -113,7 +113,7 @@ int main(int argc, char **argv)
 		}
 
 		int n = 0;
-		
+
 		for(n = 0; n < ret; n++) {
 			if((eventList[n].events & EPOLLERR) ||
 				(eventList[n].events & EPOLLHUP) ||

@@ -4,6 +4,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
 #include <stdio.h>
 
@@ -13,35 +14,43 @@
 
 typedef struct _CLIENT {
 	int fd;
-	struct sockaddr_in addr;	/* client's address information */
+	struct sockaddr_in addr;
 } Client;
  
 #define BACKLOG 5
-Client client[BACKLOG];
-int currentClient = 0;
-#define REVLEN 10
-char recvBuf[REVLEN];
 
-void showClient()
+int RecvData(int sockfd)
 {
-	int i;
-	printf("client count = %d\n", currentClient);
+	int ret = -1;
+	char buf[256];
 
-	for (i = 0; i < BACKLOG; i++) {
-		printf("[%d] = %d", i, client[i].fd);
-	}
+	do {
+		ret = recv(sockfd, buf, sizeof(buf), 0);
+		if(ret == 0) {
+			break;
+		} else if (ret < 0) {
+			break;
+		}
 
-	printf("\n");
+		printf("recv data: %s\n", buf);
+	} while(0);
+
+	printf("ret: %d\n", ret);
+
+	return ret;
 }
 
 int main(int argc, char **argv)
 {
-	int i, ret, sinSize;
+	int i, ret;
 	int recvLen = 0;
-	fd_set readfds, writefds;
+	int currentClient = 0;
+	fd_set readfds;
 	int sockListen, sockSvr, sockMax;
 	struct timeval timeout;
 	struct sockaddr_in client_addr;
+	socklen_t addrlen = sizeof(struct sockaddr_in);
+	Client client[BACKLOG];
 
 	sockListen = CreateServiceSock();
 
@@ -67,53 +76,32 @@ int main(int argc, char **argv)
 		timeout.tv_usec = 0;
 
 		ret = select((int)sockMax + 1, &readfds, NULL, NULL, &timeout);
-		if (ret < 0) {
+		if(ret < 0) {
 			printf("select error\n");
 			break;
 		} else if (ret == 0) {
-			printf("timeout ...\n");
+			printf("timeout...\n");
 			continue;
 		}
 
-		for (i = 0; i < BACKLOG; i++) {
-			if (client[i].fd > 0 && FD_ISSET(client[i].fd, &readfds)) {
-				if (recvLen != REVLEN) {
-					while (1) {
-						ret = recv(client[i].fd, (char *)recvBuf + recvLen, REVLEN - recvLen, 0);
-						if (ret == 0) {
-							client[i].fd = -1;
-							recvLen = 0;
-							break;
-						} else if (ret < 0) {
-							client[i].fd = -1;
-							recvLen = 0;
-							break;
-						}
-
-						recvLen = recvLen + ret;
-
-						if (recvLen < REVLEN) {
-							continue;
-						} else {
-							printf("%s, buf = %s\n", inet_ntoa(client[i].addr.sin_addr), recvBuf);
-							recvLen = 0;
-							break;
-						}
-					}
+		for(i = 0; i < BACKLOG; i++) {
+			if(client[i].fd > 0 && FD_ISSET(client[i].fd, &readfds)) {
+				if(RecvData(client[i].fd) <= 0) {
+					client[i].fd = -1;
 				}
 			}
 		}
 
 		if (FD_ISSET(sockListen, &readfds)) {
-			sockSvr = accept(sockListen, NULL, NULL);
-			if (sockSvr == -1) {
+			sockSvr = accept(sockListen, (struct sockaddr *)&client_addr, &addrlen);
+			if(sockSvr == -1) {
 				printf("accpet error\n");
 			} else {
 				currentClient++;
 			}
 
-			for (i = 0; i < BACKLOG; i++) {
-				if (client[i].fd < 0) {
+			for(i = 0; i < BACKLOG; i++) {
+				if(client[i].fd < 0) {
 					client[i].fd = sockSvr;
 					client[i].addr = client_addr;
 					printf("Got a connection from %s \n", inet_ntoa(client[i].addr.sin_addr));

@@ -3,6 +3,7 @@
 #include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
 #include <poll.h>
 
@@ -14,7 +15,6 @@
 #define REVLEN 10
 #define OPEN_MAX 1024
 
-int currentClient = 0;
 char recvBuf[REVLEN];
 
 int main(int argc, char **argv)
@@ -23,6 +23,7 @@ int main(int argc, char **argv)
 	int recvLen = 0;
 	int sockListen, sockSvr, sockMax;
 	int timeout = 3000;
+	int currentClient = 0;
 	struct pollfd clientfd[OPEN_MAX];
  
 	sockListen = CreateServiceSock();
