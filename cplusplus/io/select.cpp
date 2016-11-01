@@ -10,35 +10,12 @@
 
 #include "common.h"
 
-
-
 typedef struct _CLIENT {
 	int fd;
 	struct sockaddr_in addr;
 } Client;
- 
+
 #define BACKLOG 5
-
-int RecvData(int sockfd)
-{
-	int ret = -1;
-	char buf[256];
-
-	do {
-		ret = recv(sockfd, buf, sizeof(buf), 0);
-		if(ret == 0) {
-			break;
-		} else if (ret < 0) {
-			break;
-		}
-
-		printf("recv data: %s\n", buf);
-	} while(0);
-
-	printf("ret: %d\n", ret);
-
-	return ret;
-}
 
 int main(int argc, char **argv)
 {
@@ -76,35 +53,37 @@ int main(int argc, char **argv)
 		timeout.tv_usec = 0;
 
 		ret = select((int)sockMax + 1, &readfds, NULL, NULL, &timeout);
-		if(ret < 0) {
+		if (ret < 0) {
 			printf("select error\n");
 			break;
 		} else if (ret == 0) {
-			printf("timeout...\n");
+			printf("time out...\n");
 			continue;
 		}
 
-		for(i = 0; i < BACKLOG; i++) {
-			if(client[i].fd > 0 && FD_ISSET(client[i].fd, &readfds)) {
-				if(RecvData(client[i].fd) <= 0) {
+		for (i = 0; i < BACKLOG; i++) {
+			if (client[i].fd > 0 && FD_ISSET(client[i].fd, &readfds)) {
+				if (RecvData(client[i].fd) <= 0) {
 					client[i].fd = -1;
 				}
 			}
 		}
 
 		if (FD_ISSET(sockListen, &readfds)) {
-			sockSvr = accept(sockListen, (struct sockaddr *)&client_addr, &addrlen);
-			if(sockSvr == -1) {
+			sockSvr =
+				accept(sockListen, (struct sockaddr *)&client_addr, &addrlen);
+			if (sockSvr == -1) {
 				printf("accpet error\n");
 			} else {
 				currentClient++;
 			}
 
-			for(i = 0; i < BACKLOG; i++) {
-				if(client[i].fd < 0) {
+			for (i = 0; i < BACKLOG; i++) {
+				if (client[i].fd < 0) {
 					client[i].fd = sockSvr;
 					client[i].addr = client_addr;
-					printf("Got a connection from %s \n", inet_ntoa(client[i].addr.sin_addr));
+					printf("Got a connection from %s \n",
+						   inet_ntoa(client[i].addr.sin_addr));
 					break;
 				}
 			}

@@ -3,4 +3,6 @@
 
 int CreateServiceSock();
 
+int RecvData(int sockfd);
+
 #endif
