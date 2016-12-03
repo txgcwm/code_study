@@ -1,46 +1,30 @@
 #include <stdio.h>
 
-#define __STDC_CONSTANT_MACROS
-
-#ifdef _WIN32
-//Windows
-extern "C" {
-#include "libavformat/avformat.h"
-#include "libavutil/mathematics.h"
-#include "libavutil/time.h"
-};
-#else
-//Linux...
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 #include <libavformat/avformat.h>
 #include <libavutil/mathematics.h>
 #include <libavutil/time.h>
+
 #ifdef __cplusplus
 };
 #endif
-#endif
+
+
 
 int main(int argc, char *argv[])
 {
-	AVOutputFormat *ofmt = NULL;
-	AVFormatContext *ifmt_ctx = NULL, *ofmt_ctx = NULL; // Input AVFormatContext and Output AVFormatContext
-	AVPacket pkt;
-	const char *in_filename, *out_filename;
 	int ret, i;
 	int videoindex = -1;
 	int frame_index = 0;
 	int64_t start_time = 0;
-	//in_filename  = "test.mov";
-	//in_filename  = "test.mkv";
-	//in_filename  = "test.ts";
-	//in_filename  = "test.mp4";
-	//in_filename  = "test.h264";
-	in_filename = "test.flv";
-
-	out_filename = "rtmp://localhost:1935/live/livestream";	//输出 URL（Output URL）[RTMP]  
-	//out_filename = "rtp://localhost:6666";//输出 URL（Output URL）[UDP]
+	AVOutputFormat *ofmt = NULL;
+	AVFormatContext *ifmt_ctx = NULL, *ofmt_ctx = NULL; // Input AVFormatContext and Output AVFormatContext
+	AVPacket pkt;
+	const char *in_filename = "test.flv"; // "test.mov"; "test.mkv"; "test.ts"; "test.mp4"; "test.h264";
+	const char *out_filename = "rtmp://localhost:1935/live/livestream";	// "rtp://localhost:6666";
 
 	av_register_all();
 	avformat_network_init();
@@ -55,11 +39,12 @@ int main(int argc, char *argv[])
 		goto end;
 	}
 
-	for (i = 0; i < ifmt_ctx->nb_streams; i++)
+	for (i = 0; i < ifmt_ctx->nb_streams; i++) {
 		if (ifmt_ctx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
 			videoindex = i;
 			break;
 		}
+	}
 
 	av_dump_format(ifmt_ctx, 0, in_filename, 0);
 
@@ -156,11 +141,11 @@ int main(int argc, char *argv[])
 		//转换PTS/DTS（Convert PTS/DTS）
 		pkt.pts = av_rescale_q_rnd(pkt.pts, in_stream->time_base,
 							 out_stream->time_base,
-							 (AVRounding) (AV_ROUND_NEAR_INF |
+							 (enum AVRounding) (AV_ROUND_NEAR_INF |
 										   AV_ROUND_PASS_MINMAX));
 		pkt.dts = av_rescale_q_rnd(pkt.dts, in_stream->time_base,
 							 out_stream->time_base,
-							 (AVRounding) (AV_ROUND_NEAR_INF |
+							 (enum AVRounding) (AV_ROUND_NEAR_INF |
 										   AV_ROUND_PASS_MINMAX));
 		pkt.duration = av_rescale_q(pkt.duration, in_stream->time_base,
 						 out_stream->time_base);
@@ -186,6 +171,7 @@ int main(int argc, char *argv[])
 
 end:
 	avformat_close_input(&ifmt_ctx);
+
 	/* close output */
 	if (ofmt_ctx && !(ofmt->flags & AVFMT_NOFILE))
 		avio_close(ofmt_ctx->pb);
