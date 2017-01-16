@@ -83,8 +83,9 @@ int main(int argc, char **argv)
     }
 
     int inlen = slice_num * 8;
-    char *plain = (char *)malloc(inlen);
+    char *plain = (char *)malloc(inlen + 1);
 
+    plain[inlen] = '\0';
     memset(plain, 8 - left, inlen);
     memcpy(plain, argv[1], len);
 
@@ -97,8 +98,8 @@ int main(int argc, char **argv)
 
     printf("\n");
 
-    des_decrypt("0123456789ABCDEF", plain, inlen);
-    cout<<plain<<endl;
+    des_decrypt("0123456789ABCDEF", plain, size);
+    printf("%s\n", plain);
 
     return 0;
 }
