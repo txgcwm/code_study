@@ -80,12 +80,11 @@ long DesEncrypt(u_char *inbuf, u_char **outbuf, size_t inlen, const u_char *key,
 int main(int argc, char **argv)
 {
 	int len = 0;
-	const u_char *key = (const u_char *)"1234567890123456";
-	const u_char *iv = (const u_char *)"1234567890123456";
-	u_char in[30] = "12345678123";
+	const u_char *key = (const u_char *)"0123456789ABCDEF";
+	const u_char *iv = (const u_char *)"12345678";
 	u_char *out = (u_char *)malloc(100);
 
-	len = DesEncrypt(in, (u_char **)&out, strlen((const char *)in), key, iv);
+	len = DesEncrypt((u_char *)argv[1], (u_char **)&out, strlen((const char *)argv[1]), key, iv);
 	for(int i = 0; i < len; i++) {
 		printf("%d ", out[i]);
 	}
