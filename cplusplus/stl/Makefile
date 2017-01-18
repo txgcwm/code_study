@@ -1,4 +1,4 @@
-TARGET = deque list vetor map multimap set multiset 
+TARGET = deque list vetor map multimap set multiset deviceinfo
 
 CC = gcc
 CXX = g++
@@ -12,6 +12,9 @@ OBJS = $(patsubst %cpp, %o, $(SRCS))
 
 all: $(TARGET)
   
+deviceinfo: deviceinfo.o
+	$(CXX) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	
 deque: deque.o 
 	$(CXX) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 

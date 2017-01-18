@@ -3,7 +3,7 @@
 
 
 
-typedef std::map <int, char>MYMAP;
+typedef std::map <int, char> MYMAP;
 
 int main(int argc, char **argv)
 {

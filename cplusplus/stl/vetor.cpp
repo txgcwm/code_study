@@ -6,7 +6,7 @@
 int main(int argc, char **argv)
 {
 	int x;
-	std::vector <char>charVector;
+	std::vector <char> charVector;
 
 	for(x = 0; x < 10; ++x) {
 		charVector.push_back(65 + x);

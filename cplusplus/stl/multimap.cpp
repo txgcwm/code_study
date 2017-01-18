@@ -3,7 +3,7 @@
 
 
 
-typedef std::multimap <int, char>MYMAP;
+typedef std::multimap <int, char> MYMAP;
 
 int main(int argc, char **argv)
 {
