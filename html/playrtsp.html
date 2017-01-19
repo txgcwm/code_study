@@ -1,0 +1,115 @@
+<html>
+<head><title>Demo of VLC mozilla plugin</title></head>
+<body>
+<h1 align="center">Demo of Firefox VLC Plugin</h1>
+
+<embed autostart="true" type="application/x-vlc-plugin" pluginspage="http://www.videolan.org"
+version="VideoLAN.VLCPlugin.2" width="100%" height="85%" id="vlc" target="rtsp://127.0.0.1:8554/stream0">
+</embed>
+
+<script language="Javascript">
+
+var vlc = document.getElementById("vlc");
+var id = vlc.playlist.add("rtsp://127.0.0.1:8554/stream0");
+var id;
+vlc.playlist.playItem(id);
+var seek_time = 1000 * 50;
+var volume_number = 10;
+
+function volume_up()
+{
+	alert("Before up is " + vlc.audio.volume);
+
+  	if((vlc.audio.volume + volume_number) <= 200) {
+    	vlc.audio.volume += volume_number;    
+  	} else {
+    	vlc.audio.volume = 200;    
+  	}
+  
+  	alert("After up is " + vlc.audio.volume);    
+}
+
+function volume_down()
+{
+  	alert("Before down is " + vlc.audio.volume);        
+  	
+	if((vlc.audio.volume - volume_number)>= 0) {
+  		vlc.audio.volume -= volume_number;        
+  	} else {
+  		vlc.audio.volume = 0;
+  	}
+
+  	alert("After down is " + vlc.audio.volume);
+}
+
+function onPause()
+{
+	vlc.playlist.togglePause();
+}
+
+function onStop()
+{
+	vlc.playlist.stop();
+}
+
+function onPlay()
+{
+	vlc.input.rate = 1.0
+}
+
+function onFullscreen()
+{
+	vlc.video.toggleFullscreen();    
+}
+
+function onMute()
+{
+	vlc.audio.toggleMute();    
+}
+
+function onSeek_forward()
+{            
+	if((vlc.input.time + seek_time) < vlc.input.length) {
+		vlc.input.time = vlc.input.time + seek_time;    
+	} else {
+		vlc.input.time = 0;        
+	}
+}
+
+function onSeek_backward()
+{
+	if((vlc.input.time - seek_time)>= 0) {
+		vlc.input.time -= seek_time;        
+	} else {
+		vlc.input.time = 0        
+	}
+}
+
+function fastForward()
+{
+	vlc.input.rate = 8.0    
+}
+
+function backForward()
+{
+	vlc.input.rate = 0.5
+}
+
+</script>
+
+
+<br />
+<a href="javascript:;" onclick='onPlay()'>Play</a>
+<a href="javascript:;" onclick='onPause()'>Pause</a>
+<a href="javascript:;" onclick='onStop()'>Stop</a>
+<a href="javascript:;" onclick='onFullscreen()'>Fullscreen</a>
+<a href="javascript:;" onclick="volume_up()">Volume_Up</a>
+<a href="javascript:;" onclick="volume_down()">Volume_Down</a>
+<a href="javascript:;" onclick="onMute()">Mute</a>
+<a href="javascript:;" onclick="onSeek_forward()">Seek_forward</a>
+<a href="javascript:;" onclick="onSeek_backward()">Seek_backward</a>
+<a href="javascript:;" onclick="fastForward()">FastForward</a>
+<a href="javascript:;" onclick="backForward()">BackForward</a>
+
+</body>
+</html>

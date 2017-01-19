@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">  
+  
+<html xmlns="http://www.w3.org/1999/xhtml">  
+<head>  
+<title>视频显示</title>  
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />  
+<meta http-equiv="imagetoolbar" content="no" />  
+<meta name="apple-mobile-web-app-capable" content="yes" />   
+  
+<script type="text/javascript" src="${basePath}/js/jquery-1.4.2.min.js"></script>  
+<script type="text/javascript" src="${basePath}/page/player/jwplayer/jwplayer.js"></script>  
+<script type="text/javascript" src="${basePath}/page/player/jwplayer/jwplayer.js">jwplayer.key="ABCDEFGHIJKLMOPQ";</script>  
+  
+<script type="text/javascript">  
+    //仅适用于IE浏览器是，并且安装有vlc插件，则返回true；  
+    function isInsalledIEVLC(){    
+        var vlcObj = null;  
+        var vlcInstalled= false;
+
+        try {  
+            vlcObj = new ActiveXObject("VideoLAN.Vlcplugin.1");   
+            if( vlcObj != null ){   
+                vlcInstalled = true   
+            }  
+        } catch (e) {  
+            vlcInstalled = false;  
+        }
+
+        return vlcInstalled;  
+    }   
+   
+    //仅适用于firefox浏览器是，并且安装有vlc插件，则返回true；  
+    function isInsalledFFVLC(){  
+        var numPlugins=navigator.plugins.length;  
+        for(i=0;i<numPlugins;i++){   
+            plugin=navigator.plugins[i];  
+            if(plugin.name.indexOf("VideoLAN") > -1 || plugin.name.indexOf("VLC") > -1){   
+                return true;  
+            }  
+        }
+
+        return false;  
+    }  
+
+    // 浏览器检测
+    function checkBrowser(){  
+        var browser=navigator.appName  
+        var b_version=navigator.appVersion  
+        var version=parseFloat(b_version)
+
+        if ( browser=="Netscape"  && version>=4) {  
+            if(isInsalledFFVLC()){  
+                alert("已装VLC插件");  
+            }else{  
+                alert("未装VLC插件");  
+            }  
+        }else if(browser=="Microsoft Internet Explorer" && version>=4) {  
+            if(isInsalledIEVLC()){  
+                alert("已装VLC插件");  
+            }else{  
+                alert("未装VLC插件");  
+            }  
+        }  
+    }  
+</script>  
+</head>
+
+<body onload="checkBrowser();"></body>
+
+</html>   
