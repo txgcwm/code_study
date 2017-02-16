@@ -1,0 +1,21 @@
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+
+
+public class Log4jTest {
+
+	public static void main(String[] args) {
+		Logger logger = LogManager.getLogger(Test01.class.getName()); 
+		logger.trace(trace);
+		logger.debug(debug);
+		logger.info(hello);
+		logger.warn(warn);
+		logger.error(error);
+		logger.fatal(fatal);
+	}
+}
+
+
+
