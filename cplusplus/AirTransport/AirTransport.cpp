@@ -55,7 +55,7 @@ inline void generateRandom(char *buf, int len)
     return;
 }
 
-void PrintData(int *content, int size)
+inline void PrintData(int *content, int size)
 {
 	int j = 0;
 
