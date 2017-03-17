@@ -83,7 +83,7 @@ void CAirData::Analysis(int len)
   	}
 
   	if(m_data.size() >= 8 && m_length <= 0) {
-  		if(((m_data[6] - m_magicNum + 21) & 0x40) && ((m_data[7] - m_magicNum + 21) & 0x50)) {
+  		if((((m_data[6] - m_magicNum + 21) & 0xf0) == 0x40) && (((m_data[7] - m_magicNum + 21) & 0xf0) == 0x50)) {
   			m_length = (((m_data[7] - m_magicNum + 21) & 0xf) << 4) | ((m_data[6] - m_magicNum + 21) & 0xf);
   			printf("data len: %d\n", m_length);
   		}
