@@ -48,7 +48,7 @@ inline void generateRandom(char *buf, int len)
     srand((int)time(NULL));
 
     for (int i = 0; i < len - 1; i++) {
-        buf[i] = 'a' + (0 + (int)(26.0 * rand()/(RAND_MAX + 1.0)));
+        buf[i] = (int)(255.0 * rand()/(RAND_MAX + 1.0));
     }
 
     buf[len - 1] = '\0';
@@ -75,10 +75,10 @@ bool CAirKiss::SetRouteInfo(string ssid, string password)
 
 	char random = 1 + (int)(127 * rand()/(RAND_MAX + 1.0));
 
-	LeadingPart();
+	// LeadingPart();
 	MagicCode(ssid, password);
 
-	for (int i = 0; i < 15; ++i) {
+    for (int i = 0; i < 1; ++i) {
         int index;
         string data = password + random + ssid;
         
@@ -92,11 +92,13 @@ bool CAirKiss::SetRouteInfo(string ssid, string password)
         if(remainder != 0) {
             Sequence(index, &data[index * 4], remainder);
         }
-	}
+    }
 
 	for(int i = 0; i < m_length; i++) {
 		printf("%d ", m_encodedData[i]);
 	}
+
+    printf("\n");
 
 	return StartThread();
 }
@@ -145,7 +147,7 @@ void CAirKiss::MagicCode(string ssid, string password)
     magicCode[2] = 0x20 | (crc >> 4 & 0xF);
     magicCode[3] = 0x30 | (crc & 0xF);
 
-    for (int i = 0; i < 20; ++i) {
+    for (int i = 0; i < 1; ++i) {
         for (int j = 0; j < 4; ++j) {
             AppendEncodedData(magicCode[j]);
         }
@@ -203,7 +205,6 @@ void CAirKiss::EventHandleLoop()
 		perror("socket");
 		exit(-1);
 	}
-	printf("sockfd = %d\n",sockfd);
 
 	memset(&server_addr, 0, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
@@ -221,9 +222,11 @@ void CAirKiss::EventHandleLoop()
 			if(sendto(sockfd, buf, len, 0, (struct sockaddr*)&server_addr, addr_len) < 0) {
 				perror("sendrto");
 			}
+
+            WaitForSleep(200);
 		}
 
-		if(WaitForSleep(10) != 0) {
+		if(WaitForSleep(100) != 0) {
 			break;
 		}
 	}

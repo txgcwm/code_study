@@ -96,9 +96,9 @@ inline void SetSendData(int *content, int &size, string ssid, string password)
 
 	for(int i = 0; i < 2 * len; i++) {
 		if(i % 2 == 0) {
-			content[4 + i] = ((6 + i) << 4) | (raw[i] & 0x0f);
+			content[4 + i] = ((6 + i) << 4) | (raw[i/2] & 0x0f);
 		} else {
-			content[4 + i] = ((6 + i) << 4) | (raw[i] >> 4);
+			content[4 + i] = ((6 + i) << 4) | (raw[i/2] >> 4);
 		}
 	}
 
@@ -169,6 +169,12 @@ void CAirTransport::EventHandleLoop()
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_addr.s_addr = inet_addr("224.0.0.251");
 	server_addr.sin_port = htons(9080);
+
+#if 0
+	server_addr.sin_addr.s_addr = inet_addr("255.255.255.255");
+	int so_broadcast = 1;
+	setsockopt(sockfd, SOL_SOCKET, SO_BROADCAST, &so_broadcast, sizeof(so_broadcast));
+#endif
 
 	int size = 0;
 	int content[64] = {0};
