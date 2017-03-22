@@ -1,19 +1,19 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<unistd.h>
-#include<string.h>
-#include<sys/socket.h>
-#include<arpa/inet.h>
-#include<netinet/in.h>
-#include<sys/types.h>
-#include<netdb.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 #include <sys/ioctl.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
 #include <net/if.h>
+#include <netdb.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdio.h>
 
-#define IP_FOUND "IP_FOUND"
-#define IP_FOUND_ACK "IP_FOUND_ACK"
-#define IFNAME "eth0"
-#define MCAST_PORT 9999
+#define IP_FOUND 		"IP_FOUND"
+#define IP_FOUND_ACK 	"IP_FOUND_ACK"
+#define IFNAME 			"eth0"
+#define MCAST_PORT 		9999
 
 int main(int argc, char*argv[])
 {
@@ -23,16 +23,13 @@ int main(int argc, char*argv[])
     int so_broadcast = 1;
     struct ifreq *ifr;
     struct ifconf ifc;
-    struct sockaddr_in broadcast_addr; //广播地址
-    struct sockaddr_in from_addr; //服务端地址
+    struct sockaddr_in broadcast_addr;
+    struct sockaddr_in from_addr;
     socklen_t from_len = sizeof(from_addr);
     int count = -1;
-    fd_set readfd; //读文件描述符集合
+    fd_set readfd;
     char buffer[1024];
     struct timeval timeout;
-
-    // timeout.tv_sec = 2; //超时时间为2秒
-    // timeout.tv_usec = 0;
 
     sock = socket(AF_INET, SOCK_DGRAM, 0);
     if (sock < 0) {
@@ -48,7 +45,6 @@ int main(int argc, char*argv[])
     }
     ifr = ifc.ifc_req;
 
-#if 0
     for (j = ifc.ifc_len / sizeof(struct ifreq); --j >= 0; ifr++) {
         if(!strcmp(ifr->ifr_name, "eth0")) {
             if (ioctl(sock, SIOCGIFFLAGS, (char *)ifr) < 0) {
@@ -64,15 +60,15 @@ int main(int argc, char*argv[])
             break;
         }
     }
-#endif
 
     //将使用的网络接口名字复制到ifr.ifr_name中，由于不同的网卡接口的广播地址是不一样的，因此指定网卡接口
     //strncpy(ifr.ifr_name, IFNAME, strlen(IFNAME));
-    //发送命令，获得网络接口的广播地址
-    if (ioctl(sock, SIOCGIFBRDADDR, ifr) == -1) {
+    
+    if (ioctl(sock, SIOCGIFBRDADDR, ifr) == -1) { //发送命令，获得网络接口的广播地址
         perror("ioctl error");
         return -1;
     }
+
     //将获得的广播地址复制到broadcast_addr
     memcpy(&broadcast_addr, (char *)&ifr->ifr_broadaddr, sizeof(struct sockaddr_in));
     //设置广播端口号
