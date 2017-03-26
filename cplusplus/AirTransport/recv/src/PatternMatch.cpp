@@ -25,6 +25,7 @@ bool CPatternMatch::QueryIdentificationPackage(vector<int> data)
 
 			it = find(data.begin(), data.end(), magic[j]);
 		    if(it != data.end()) {
+		    	int position = distance(data.begin(), magic);
 		        std::cout << "element is found." << '\n';
 		    }
 		}
