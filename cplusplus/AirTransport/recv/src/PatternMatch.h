@@ -7,6 +7,8 @@ public:
 	CPatternMatch(char pattern[]);
 	~CPatternMatch();
 
+	bool QueryIdentificationPackage(std::vector<int> data);
+
 private:
 	char m_pattern[4];
 };

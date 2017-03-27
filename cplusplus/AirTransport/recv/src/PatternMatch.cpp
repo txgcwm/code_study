@@ -1,3 +1,12 @@
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdio.h>
+#include <algorithm>
+#include <iterator> 
+#include <string>
+#include <vector>
+
 #include "PatternMatch.h"
 
 
@@ -11,7 +20,7 @@ CPatternMatch::~CPatternMatch()
 {
 }
 
-bool CPatternMatch::QueryIdentificationPackage(vector<int> data)
+bool CPatternMatch::QueryIdentificationPackage(std::vector<int> data)
 {
 	bool bget = false;
 
@@ -23,15 +32,13 @@ bool CPatternMatch::QueryIdentificationPackage(vector<int> data)
 		for(int j = 0; j < 4; j++) {
 			magic[j] = data[i] + m_pattern[j];
 
-			it = find(data.begin(), data.end(), magic[j]);
+			it = std::find(data.begin(), data.end(), magic[j]);
 		    if(it != data.end()) {
-		    	int position = distance(data.begin(), magic);
-		        std::cout << "element is found." << '\n';
+		    	int position = std::distance(data.begin(), it);
+		        // std::cout << "element is found." << '\n';
 		    }
 		}
-
 	}
-    
 
 	return bget;
 }
