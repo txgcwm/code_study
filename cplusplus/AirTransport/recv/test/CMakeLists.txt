@@ -1,4 +1,4 @@
-set(EXECUTABLE_OUTPUT_PATH ${OUTDIR}/flv/test)
+set(EXECUTABLE_OUTPUT_PATH ${OUTDIR}/recv/test)
 
 include_directories(
 	${TOPDIR}/recv/src
