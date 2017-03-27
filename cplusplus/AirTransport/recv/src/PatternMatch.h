@@ -13,6 +13,7 @@ public:
 	~CPatternMatch();
 
 	bool QueryIdentificationPackage(std::vector<int> data);
+	bool DecodeTransmitRecord(std::vector<int> data, std::string &record);
 	void PrintMagicList();
 
 private:
