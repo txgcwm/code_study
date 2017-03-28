@@ -43,13 +43,13 @@ bool CPatternMatch::QueryIdentificationPackage(std::vector<int> data)
 			it = std::find(data.begin(), data.end(), magic);
 		    if(it != data.end()) {
 		    	count++;
-		    	// int position = std::distance(data.begin(), it);
 		    }
 		}
 
 		if(count == 4) {
 			printf("find a magic num: %d\n", data[i]);
 			m_magicList.push_front(data[i]);
+			bget = true;
 		}
 	}
 
