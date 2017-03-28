@@ -16,3 +16,13 @@ target_link_libraries(TestAirData recv)
 #################################
 add_executable(TestPatternMatch TestPatternMatch.cpp)
 target_link_libraries(TestPatternMatch recv)
+
+
+#################################
+add_executable(TestCombination TestCombination.cpp)
+target_link_libraries(TestCombination)
+
+
+#################################
+add_executable(TestArray TestArray.cpp)
+target_link_libraries(TestArray)

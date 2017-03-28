@@ -56,6 +56,7 @@ bool CPatternMatch::QueryIdentificationPackage(std::vector<int> data)
 	return bget;
 }
 
+#if 0
 bool CPatternMatch::Analyze(std::vector<int> data, int position, int magic, std::string &record)
 {
 	int length = 0;
@@ -93,6 +94,34 @@ bool CPatternMatch::Analyze(std::vector<int> data, int position, int magic, std:
   	}
 
   	return false;
+}
+#endif
+
+// bool CPatternMatch::
+// {
+
+// }
+
+bool CPatternMatch::Analyze(std::vector<int> data, int position, int magic, std::string &record)
+{
+	int hlen = data.size() - position - 1;
+	std::vector<int> hybrid;
+
+	hybrid.resize(hlen);
+
+	// printf("size: %d, position: %d\n", data.size(), position);
+
+	for(int i = 0; i < hlen; i++) {
+		hybrid[i] = data[position + 1 + i] - magic + 21;
+	}
+
+	for(int j = 0; j < hlen; j++) {
+		printf("%2x ", (unsigned)hybrid[j]);
+	}
+
+	printf("\n");
+
+	return false;
 }
 
 bool CPatternMatch::DecodeTransmitRecord(std::vector<int> data, std::string &record)

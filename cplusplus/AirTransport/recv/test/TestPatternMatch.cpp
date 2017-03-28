@@ -39,7 +39,7 @@ int main(int argc, char **argv)
 			break;
 		}
 
-		pmatch->PrintMagicList();
+		// pmatch->PrintMagicList();
 	}
 
 	return 0;
