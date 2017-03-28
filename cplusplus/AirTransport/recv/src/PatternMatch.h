@@ -17,6 +17,9 @@ public:
 	void PrintMagicList();
 
 private:
+	bool Analyze(std::vector<int> data, int position, int magic, std::string &record);
+
+private:
 	char m_pattern[4];
 	std::list<int> m_magicList;
 };
