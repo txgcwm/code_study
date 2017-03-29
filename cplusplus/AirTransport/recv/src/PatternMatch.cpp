@@ -97,31 +97,86 @@ bool CPatternMatch::Analyze(std::vector<int> data, int position, int magic, std:
 }
 #endif
 
-// bool CPatternMatch::
-// {
+bool CPatternMatch::AnalyticSequenceData(std::vector<int> data, std::string &record)
+{
+	int length = 0;
 
-// }
+	int ccrc8 = 0;
+	if(((data[0] & 0xf0) == 0x20) && ((data[1] & 0xf0) == 0x30)) {
+		ccrc8 = ((data[1] & 0xf) << 4) | (data[0] & 0xf);
+		printf("get crc8: %d\n", ccrc8);
+	} else {
+		return false;
+	}
+
+    if(((data[2] & 0xf0) == 0x40)
+    	&& ((data[3] & 0xf0) == 0x50)) {
+		length = ((data[3] & 0xf) << 4) | (data[2] & 0xf);
+		// printf("data len: %d\n", length);
+	}
+
+	if(length > 0 && data.size() >= 2 * length + 4) {
+  		char raw[32] = {0};
+
+  		for(int i = 4; i < data.size(); i += 2) {
+  			// printf("%x %x\n", (data[i + 1] & 0xff0), (data[i] & 0xff0));
+  			printf("%x ", ((data[i + 1] & 0xf) << 4) | (data[i] & 0xf));
+  			raw[(i - 4)/2] = ((data[i + 1] & 0xf) << 4) | (data[i] & 0xf);
+  		}
+
+  		printf("\nsize(%ld), len(%d), raw data: %s\n", data.size(), length, raw);
+
+  		char dcrc8 = crc8(raw, length);
+  		if(dcrc8 == ccrc8) {
+  			printf("recv data crc8 right!\n");
+  			record = raw;
+  			return true;
+  		}
+  	}
+
+	return false;
+}
 
 bool CPatternMatch::Analyze(std::vector<int> data, int position, int magic, std::string &record)
 {
+	bool res = false;
 	int hlen = data.size() - position - 1;
 	std::vector<int> hybrid;
 
 	hybrid.resize(hlen);
 
-	// printf("size: %d, position: %d\n", data.size(), position);
-
 	for(int i = 0; i < hlen; i++) {
 		hybrid[i] = data[position + 1 + i] - magic + 21;
 	}
 
-	for(int j = 0; j < hlen; j++) {
-		printf("%2x ", (unsigned)hybrid[j]);
-	}
+  	typedef TupleHelper<std::vector<int> >::Type Tuple;
+  	std::vector<Tuple> result = GetFirstCombination(hybrid.begin(), hybrid.end());
 
-	printf("\n");
+  	do {
+  		std::vector<int> vec;
 
-	return false;
+  		for(std::vector<Tuple>::iterator it = result.begin();
+  			it != result.end(); ++it) {
+      		vec.push_back(*boost::get<1>(*it));
+  		}
+
+  		// for(int i = 0; i < vec.size(); i++) {
+  		// 	printf("%3x ", vec[i]);
+  		// }
+
+  		// printf("\n");
+
+  		if(vec.size() >= 4) {
+  			if(AnalyticSequenceData(vec, record)) {
+  				res = true;
+  				break;
+  			}
+  		}
+  	} while (NextCombination(result.begin(), result.end()));
+
+  	// printf("size: %d, position: %d\n", data.size(), position);
+
+	return res;
 }
 
 bool CPatternMatch::DecodeTransmitRecord(std::vector<int> data, std::string &record)

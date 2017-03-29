@@ -18,6 +18,7 @@ public:
 
 private:
 	bool Analyze(std::vector<int> data, int position, int magic, std::string &record);
+	bool AnalyticSequenceData(std::vector<int> data, std::string &record);
 
 private:
 	char m_pattern[4];
