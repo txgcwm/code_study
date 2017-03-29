@@ -104,7 +104,7 @@ bool CPatternMatch::AnalyticSequenceData(std::vector<int> data, std::string &rec
 	int ccrc8 = 0;
 	if(((data[0] & 0xf0) == 0x20) && ((data[1] & 0xf0) == 0x30)) {
 		ccrc8 = ((data[1] & 0xf) << 4) | (data[0] & 0xf);
-		printf("get crc8: %d\n", ccrc8);
+		// printf("get crc8: %d\n", ccrc8);
 	} else {
 		return false;
 	}
@@ -118,9 +118,9 @@ bool CPatternMatch::AnalyticSequenceData(std::vector<int> data, std::string &rec
 	if(length > 0 && data.size() >= 2 * length + 4) {
   		char raw[32] = {0};
 
-  		for(int i = 4; i < data.size(); i += 2) {
+  		for(int i = 4; i < 2 * length + 4; i += 2) {
   			// printf("%x %x\n", (data[i + 1] & 0xff0), (data[i] & 0xff0));
-  			printf("%x ", ((data[i + 1] & 0xf) << 4) | (data[i] & 0xf));
+  			// printf("%x ", ((data[i + 1] & 0xf) << 4) | (data[i] & 0xf));
   			raw[(i - 4)/2] = ((data[i + 1] & 0xf) << 4) | (data[i] & 0xf);
   		}
 
@@ -128,7 +128,10 @@ bool CPatternMatch::AnalyticSequenceData(std::vector<int> data, std::string &rec
 
   		char dcrc8 = crc8(raw, length);
   		if(dcrc8 == ccrc8) {
-  			printf("recv data crc8 right!\n");
+  			for(int j = 0; j < length; j++) {
+  				printf("%d, ", (unsigned char)raw[j]);
+  			}
+  			printf("recv data crc8(ccrc8: %d, dcrc8: %d) right!\n", ccrc8, dcrc8);
   			record = raw;
   			return true;
   		}
@@ -160,16 +163,16 @@ bool CPatternMatch::Analyze(std::vector<int> data, int position, int magic, std:
       		vec.push_back(*boost::get<1>(*it));
   		}
 
-  		// for(int i = 0; i < vec.size(); i++) {
-  		// 	printf("%3x ", vec[i]);
-  		// }
-
-  		// printf("\n");
-
   		if(vec.size() >= 4) {
+  			for(int i = 0; i < vec.size(); i++) {
+	  			printf("%3x ", vec[i]);
+	  		}
+
+	  		printf("\nmagic: %d\n", magic);
+
   			if(AnalyticSequenceData(vec, record)) {
-  				res = true;
-  				break;
+  				// res = true;
+  				// break;
   			}
   		}
   	} while (NextCombination(result.begin(), result.end()));
