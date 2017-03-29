@@ -26,3 +26,8 @@ target_link_libraries(TestCombination)
 #################################
 add_executable(TestArray TestArray.cpp)
 target_link_libraries(TestArray)
+
+
+#################################
+add_executable(TestSeq TestSeq.cpp)
+target_link_libraries(TestSeq)
