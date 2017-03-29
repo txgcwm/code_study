@@ -35,4 +35,4 @@ target_link_libraries(TestArray)
 
 #################################
 add_executable(TestSort TestSort.cpp)
-target_link_libraries(TestSort)
+target_link_libraries(TestSort recv)
