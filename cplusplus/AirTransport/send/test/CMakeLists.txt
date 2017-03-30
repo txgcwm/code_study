@@ -12,3 +12,7 @@ link_directories(
 add_executable(TestAirTransport TestAirTransport.cpp)
 target_link_libraries(TestAirTransport send pthread)
 
+
+#################################
+add_executable(TestRecvMutil TestRecvMutil.cpp)
+target_link_libraries(TestRecvMutil send pthread)
