@@ -57,7 +57,7 @@ inline void generateRandom(char *buf, int len)
     return;
 }
 
-inline void PrintData(int *content, int size)
+inline void PrintData(unsigned short *content, int size)
 {
 	int j = 0;
 
@@ -79,7 +79,7 @@ inline void PrintData(int *content, int size)
 inline void SetSendData(unsigned short *content, int &size, string ssid, string password)
 {
 	int len = 0;
-	unsigned char raw[64] = {0};
+	char raw[64] = {0};
 
 	if(ssid.size() > 0) {
 		len = ssid.size() + password.size() + 1;

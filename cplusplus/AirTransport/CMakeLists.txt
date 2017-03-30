@@ -14,5 +14,8 @@ set(BUILDDIR ${TOPDIR}/build/)
 #add_definitions(-DBUILD_SSL)
 #add_compile_options(-DBUILD_SSL)
 
+add_subdirectory(${TOPDIR}/send/src ${BUILDDIR}/send/src)
+add_subdirectory(${TOPDIR}/send/test ${BUILDDIR}/send/test)
+
 add_subdirectory(${TOPDIR}/recv/src ${BUILDDIR}/recv/src)
 add_subdirectory(${TOPDIR}/recv/test ${BUILDDIR}/recv/test)
