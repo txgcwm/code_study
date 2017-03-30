@@ -11,6 +11,8 @@
 #include "PatternMatch.h"
 
 
+#define CRC_LEN_TOTAL       6
+
 
 CPatternMatch::CPatternMatch(char pattern[])
 {
@@ -56,88 +58,45 @@ bool CPatternMatch::QueryIdentificationPackage(std::vector<int> data)
 	return bget;
 }
 
-#if 0
-bool CPatternMatch::Analyze(std::vector<int> data, int position, int magic, std::string &record)
-{
-	int length = 0;
-
-    if((((data[position + 3] - magic + 21) & 0xf0) == 0x40)
-    	&& (((data[position + 4] - magic + 21) & 0xf0) == 0x50)) {
-			length = (((data[position + 4] - magic + 21) & 0xf) << 4) | ((data[position + 3] - magic + 21) & 0xf);
-			// printf("data len: %d\n", length);
-		}
-
-		if(length > 0 && data.size() >= 2 * length + position + 5) {
-  		printf("position(%d), size(%ld), len(%d)\n", position, data.size(), length);
-  		char raw[32] = {0};
-
-  		for(int i = position + 5; i < data.size(); i += 2) {
-  			// printf("%x %x\n", ((data[i + 1] - magic + 21) & 0xff0), ((data[i] - magic + 21) & 0xff0));
-  			printf("%x ", (((data[i + 1] - magic + 21) & 0xf) << 4) | ((data[i] - magic + 21) & 0xf));
-  			raw[(i - position - 5)/2] = (((data[i + 1] - magic + 21) & 0xf) << 4) | ((data[i] - magic + 21) & 0xf);
-  		}
-
-  		printf("\nraw data: %s\n", raw);
-
-  		int ccrc8 = 0;
-  		if(((data[position + 1] - magic + 21) & 0x20) && ((data[position + 2] - magic + 21) & 0x30)) {
-  			ccrc8 = (((data[position + 2] - magic + 21) & 0xf) << 4) | ((data[position + 1] - magic + 21) & 0xf);
-				printf("get crc8: %d\n", ccrc8);
-  		}
-
-  		char dcrc8 = crc8(raw, length);
-  		if(dcrc8 == ccrc8) {
-  			printf("recv data crc8 right!\n");
-  			record = raw;
-  			return true;
-  		}
-  	}
-
-  	return false;
-}
-#endif
-
 bool CPatternMatch::AnalyticSequenceData(std::vector<int> data, std::string &record)
 {
-	int length = 0;
+  	int length = -1;
+  	unsigned short ccrc8 = 0;
 
-	int ccrc8 = 0;
-	if(((data[0] & 0xf0) == 0x20) && ((data[1] & 0xf0) == 0x30)) {
-		ccrc8 = ((data[1] & 0xf) << 4) | (data[0] & 0xf);
-		// printf("get crc8: %d\n", ccrc8);
+  	if(((data[0] & 0xf0) == 0x20) && ((data[1] & 0xf0) == 0x30)
+      	&& ((data[2] & 0xf0) == 0x40) && ((data[3] & 0xf0) == 0x50)) {
+    	ccrc8 = ((data[3] & 0xf) << 12) | ((data[2] & 0xf) << 8) | ((data[1] & 0xf) << 4) | (data[0] & 0xf);
+    	// printf("get crc8: %d\n", ccrc8);
 	} else {
-		return false;
+	    return false;
 	}
 
-    if(((data[2] & 0xf0) == 0x40)
-    	&& ((data[3] & 0xf0) == 0x50)) {
-		length = ((data[3] & 0xf) << 4) | (data[2] & 0xf);
-		// printf("data len: %d\n", length);
-	}
-
-	if(length > 0 && data.size() >= 2 * length + 4) {
-  		char raw[32] = {0};
-
-  		for(int i = 4; i < 2 * length + 4; i += 2) {
-  			// printf("%x %x\n", (data[i + 1] & 0xff0), (data[i] & 0xff0));
-  			// printf("%x ", ((data[i + 1] & 0xf) << 4) | (data[i] & 0xf));
-  			raw[(i - 4)/2] = ((data[i + 1] & 0xf) << 4) | (data[i] & 0xf);
-  		}
-
-  		printf("\nsize(%ld), len(%d), raw data: %s\n", data.size(), length, raw);
-
-  		char dcrc8 = crc8(raw, length);
-  		if(dcrc8 == ccrc8) {
-  			for(int j = 0; j < length; j++) {
-  				printf("%d, ", (unsigned char)raw[j]);
-  			}
-  			printf("recv data crc8(ccrc8: %d, dcrc8: %d) right!\n", ccrc8, dcrc8);
-  			record = raw;
-  			return true;
-  		}
+    if(((data[4] & 0xf0) == 0x60)
+      	&& ((data[5] & 0xf0) == 0x70)) {
+    	length = ((data[5] & 0xf) << 4) | (data[4] & 0xf);
+    	// printf("data len: %d\n", length);
   	}
 
-	return false;
+  	if(length >= 0 && data.size() >= 2 * length + CRC_LEN_TOTAL) {
+      	char raw[32] = {0};
+
+      	for(int i = CRC_LEN_TOTAL; i < 2 * length + CRC_LEN_TOTAL; i += 2) {
+        	// printf("%x %x\n", (data[i + 1] & 0xff0), (data[i] & 0xff0));
+        	// printf("%x ", ((data[i + 1] & 0xf) << 4) | (data[i] & 0xf));
+        	raw[(i - CRC_LEN_TOTAL)/2] = ((data[i + 1] & 0xf) << 4) | (data[i] & 0xf);
+      	}
+
+      	// printf("size(%ld), len(%d), raw data: %s\n", data.size(), length, raw);
+
+      	unsigned short dcrc8 = crc_ccitt((unsigned char*)raw, length);
+      	if(dcrc8 == ccrc8) {
+        	printf("recv data crc16(ccrc16(%d), dcrc16(%d)) right!\n", ccrc8, dcrc8);
+        	record = raw;
+        	return true;
+      	}
+    }
+
+  	return false;
 }
 
 bool CPatternMatch::Analyze(std::vector<int> data, int position, int magic, std::string &record)
@@ -155,6 +114,10 @@ bool CPatternMatch::Analyze(std::vector<int> data, int position, int magic, std:
   	typedef TupleHelper<std::vector<int> >::Type Tuple;
   	std::vector<Tuple> result = GetFirstCombination(hybrid.begin(), hybrid.end());
 
+  	int count = 0;
+
+  	printf("\n*********************************************\n");
+
   	do {
   		std::vector<int> vec;
 
@@ -163,12 +126,14 @@ bool CPatternMatch::Analyze(std::vector<int> data, int position, int magic, std:
       		vec.push_back(*boost::get<1>(*it));
   		}
 
-  		if(vec.size() >= 4) {
-  			for(int i = 0; i < vec.size(); i++) {
-	  			printf("%3x ", vec[i]);
-	  		}
+  		count++;
 
-	  		printf("\nmagic: %d\n", magic);
+  		if(vec.size() >= CRC_LEN_TOTAL) {
+  			// for(int i = 0; i < vec.size(); i++) {
+	  		// 	printf("%3x ", vec[i]);
+	  		// }
+
+	  		// printf("\nmagic: %d\n", magic);
 
   			if(AnalyticSequenceData(vec, record)) {
   				// res = true;
@@ -176,6 +141,12 @@ bool CPatternMatch::Analyze(std::vector<int> data, int position, int magic, std:
   			}
   		}
   	} while (NextCombination(result.begin(), result.end()));
+
+  	for(int i = 0; i < hybrid.size(); i++) {
+		printf("%3x ", hybrid[i]);
+	}
+
+  	printf("\n***********************  count(%d) **********************\n", count);
 
   	// printf("size: %d, position: %d\n", data.size(), position);
 

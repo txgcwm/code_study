@@ -15,6 +15,8 @@
 using namespace std;
 
 
+#define CRC_LEN_TOTAL 		6
+#define DATA_SATART_INDEX	8
 
 inline char crc8(const char *data, int len)
 {
@@ -74,10 +76,10 @@ inline void PrintData(int *content, int size)
 	printf("\n");
 }
 
-inline void SetSendData(int *content, int &size, string ssid, string password)
+inline void SetSendData(unsigned short *content, int &size, string ssid, string password)
 {
-	char raw[64] = {0};
 	int len = 0;
+	unsigned char raw[64] = {0};
 
 	if(ssid.size() > 0) {
 		len = ssid.size() + password.size() + 1;
@@ -96,13 +98,13 @@ inline void SetSendData(int *content, int &size, string ssid, string password)
 
 	for(int i = 0; i < 2 * len; i++) {
 		if(i % 2 == 0) {
-			content[4 + i] = ((6 + i) << 4) | (raw[i/2] & 0x0f);
+			content[CRC_LEN_TOTAL + i] = ((DATA_SATART_INDEX + i) << 4) | (raw[i/2] & 0x0f);
 		} else {
-			content[4 + i] = ((6 + i) << 4) | (raw[i/2] >> 4);
+			content[CRC_LEN_TOTAL + i] = ((DATA_SATART_INDEX + i) << 4) | (raw[i/2] >> 4);
 		}
 	}
 
-	size = 2 * len + 4;
+	size = 2 * len + CRC_LEN_TOTAL;
 
 	PrintData(content, size);
 
@@ -177,14 +179,18 @@ void CAirTransport::EventHandleLoop()
 #endif
 
 	int size = 0;
-	int content[64] = {0};
+	unsigned short content[64] = {0};
 	SetSendData(content, size, m_ssid, m_password);
 
-	char magic[4] = {21, 22, 25, 27};
+	unsigned short magic[4] = {21, 22, 25, 27};
 
 	while(1) {
-		for(int j = 0; j < 4; j++) {
-			SendPacket(sockfd, magic[j], (sockaddr *)&server_addr, addr_len);
+		for(int k = 0; k < 5; k++) {
+			for(int j = 0; j < 4; j++) {
+				SendPacket(sockfd, magic[j], (sockaddr *)&server_addr, addr_len);
+			}
+
+			sleep(0);
 		}
 
 		for(int i = 0; i < size; i++) {

@@ -64,4 +64,6 @@ bool NextCombination(ForwardIt first, ForwardIt last)
 
 char crc8(const char *data, int len);
 
+unsigned short crc_ccitt(unsigned char *q, int len);
+
 #endif
