@@ -90,7 +90,8 @@ bool CPatternMatch::AnalyticSequenceData(std::vector<int> data, std::string &rec
 
       	unsigned short dcrc8 = crc_ccitt((unsigned char*)raw, length);
       	if(dcrc8 == ccrc8) {
-        	printf("recv data crc16(ccrc16(%d), dcrc16(%d)) right!\n", ccrc8, dcrc8);
+        	printf("ccrc16(%d)=dcrc16(%d) size(%ld), len(%d), raw data: %s\n",
+        			ccrc8, dcrc8, data.size(), length, raw);
         	record = raw;
         	return true;
       	}
@@ -105,10 +106,11 @@ bool CPatternMatch::Analyze(std::vector<int> data, int position, int magic, std:
 	int hlen = data.size() - position - 1;
 	std::vector<int> hybrid;
 
-	hybrid.resize(hlen);
-
 	for(int i = 0; i < hlen; i++) {
-		hybrid[i] = data[position + 1 + i] - magic + 21;
+		int value = data[position + 1 + i] - magic + 21;
+		if(((value & 0x0ff0) >> 4) >= 2) {
+			hybrid.push_back(value);
+		} 
 	}
 
   	typedef TupleHelper<std::vector<int> >::Type Tuple;
@@ -116,7 +118,7 @@ bool CPatternMatch::Analyze(std::vector<int> data, int position, int magic, std:
 
   	int count = 0;
 
-  	printf("\n*********************************************\n");
+  	// printf("\n*********************************************\n");
 
   	do {
   		std::vector<int> vec;
@@ -142,11 +144,11 @@ bool CPatternMatch::Analyze(std::vector<int> data, int position, int magic, std:
   		}
   	} while (NextCombination(result.begin(), result.end()));
 
-  	for(int i = 0; i < hybrid.size(); i++) {
-		printf("%3x ", hybrid[i]);
-	}
+ //  	for(int i = 0; i < hybrid.size(); i++) {
+	// 	printf("%3x ", hybrid[i]);
+	// }
 
-  	printf("\n***********************  count(%d) **********************\n", count);
+ //  	printf("\n***********************  count(%d) **********************\n", count);
 
   	// printf("size: %d, position: %d\n", data.size(), position);
 
