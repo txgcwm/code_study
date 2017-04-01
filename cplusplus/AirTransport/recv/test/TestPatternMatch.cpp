@@ -85,11 +85,10 @@ int main(int argc, char **argv)
 	// 				142, 160, 168, 185, 203, 73, 74, 79, 199, 214, 231, 247, 263, 280, 295, 313, 327, 346, 359,
 	// 				379, 391, 412, 423, 427, 114, 131, 181, 94, 138, 156, 164, 70, 70, 70, 102, 70, 70, 52, 289};
 
-	int data[] = {83, 98, 135, 142, 160, 168, 185, 203, 218, 235, 251, 267, 299, 118, 77, 79, 94, 114, 131, 247,
-					263, 280, 295, 313, 327, 346, 359, 379, 391, 412, 423, 317, 331, 350, 383, 395, 78, 81, 284,
-					363, 416, 427, 68, 73, 74, 138, 156, 164, 181, 199, 214, 231, 70, 70, 70, 70, 61, 417, 56, 53,
-					245, 263, 166, 64, 635};
-					
+	int data[] = {94, 114, 395, 416, 427, 73, 77, 79, 74, 131, 138, 156, 164, 181, 199, 214, 231, 247, 263, 280,
+					295, 313, 327, 346, 359, 391, 412, 423, 125, 126, 140, 299, 78, 81, 83, 135, 379, 331, 350,
+					363, 383, 98, 118, 142, 168, 185, 203, 218, 235, 251, 267, 284, 150, 152, 163, 175, 160};
+
 	std::vector<int> vecNum;
 	char pattern[] = {0, 1, 4, 6};
 	CPatternMatch *pmatch = new CPatternMatch(pattern);	
@@ -100,17 +99,18 @@ int main(int argc, char **argv)
 		vecNum.push_back(data[i]);
 
 		std::sort(vecNum.begin(), vecNum.end(), lessmark);
-
-		// printf("raw data count: %d\n", i);
-		pmatch->QueryIdentificationPackage(vecNum);
+printf("+++++++++++++++++++++++++++++++++++++++++++++++++++ %d\n", i);
+		if(pmatch->QueryIdentificationPackage(vecNum)) {
+			printf("raw data count: %d\n", i);
+		}
 
 		std::string raw = "";
 		if(pmatch->DecodeTransmitRecord(vecNum, raw)) {
 			printf("get transmit record(%s) success!\n", raw.c_str());
 			break;
 		}
-
-		pmatch->PrintMagicList();
+printf("+++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+		// pmatch->PrintMagicList();
 	}
 
 	return 0;
