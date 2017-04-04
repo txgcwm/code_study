@@ -104,19 +104,37 @@ bool CPatternMatch::Analyze(std::vector<int> data, int position, int magic, std:
 {
 	bool res = false;
 	int hlen = data.size() - position - 1;
+	int expect = 2;
 	std::vector<int> hybrid;
 
 	for(int i = 0; i < hlen; i++) {
 		int value = data[position + 1 + i] - magic + 21;
-		if(((value & 0x0ff0) >> 4) >= 2) {
+		int index = (value & 0x0ff0) >> 4;
+
+		if(index < 2) {
+			continue;
+		}
+
+		// printf("raw: %d, value: %d, index: %d, expect: %d\n", data[position + 1 + i], value, index, expect);
+
+		if(index == expect || index == (expect + 1)) {
 			hybrid.push_back(value);
-		} 
+			if(index > expect) {
+				expect++;
+			}
+		} else {
+			break;
+		}
+	}
+
+	if(hybrid.size() < CRC_LEN_TOTAL) {
+		return false;
 	}
 
   	typedef TupleHelper<std::vector<int> >::Type Tuple;
   	std::vector<Tuple> result = GetFirstCombination(hybrid.begin(), hybrid.end());
 
-  	int count = 0;
+  	// int count = 0;
 
   	// printf("\n*********************************************\n");
 
@@ -128,7 +146,7 @@ bool CPatternMatch::Analyze(std::vector<int> data, int position, int magic, std:
       		vec.push_back(*boost::get<1>(*it));
   		}
 
-  		count++;
+  		// count++;
 
   		if(vec.size() >= CRC_LEN_TOTAL) {
   			// for(int i = 0; i < vec.size(); i++) {

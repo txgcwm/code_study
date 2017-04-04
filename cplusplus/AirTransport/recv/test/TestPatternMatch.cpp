@@ -99,7 +99,9 @@ int main(int argc, char **argv)
 		vecNum.push_back(data[i]);
 
 		std::sort(vecNum.begin(), vecNum.end(), lessmark);
-printf("+++++++++++++++++++++++++++++++++++++++++++++++++++ %d\n", i);
+
+		printf("\n+++++++++++++++++++++++++++++++++++++++++++++++++++ %d\n", i + 1);
+
 		if(pmatch->QueryIdentificationPackage(vecNum)) {
 			printf("raw data count: %d\n", i);
 		}
@@ -109,7 +111,7 @@ printf("+++++++++++++++++++++++++++++++++++++++++++++++++++ %d\n", i);
 			printf("get transmit record(%s) success!\n", raw.c_str());
 			break;
 		}
-printf("+++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+
 		// pmatch->PrintMagicList();
 	}
 
