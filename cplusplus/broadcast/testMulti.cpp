@@ -43,15 +43,21 @@ int SendPacket(int s, int addr1, int addr2, int addr3, int addr4, int port)
     return 0;
 }
 
-int SendData(int addr4)
+int SendData(bool broadcast, int addr4)
 {
 	int sock = socket(AF_INET, SOCK_DGRAM, 0);
     if (sock == -1) {
         return -1;
     }
 
-    SendPacket(sock, 224, 0, 0, addr4, 67819);
-
+    if(broadcast) {
+    	int so_broadcast = 1;
+		setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &so_broadcast, sizeof(so_broadcast));
+		SendPacket(sock, 255, 255, 255, 255, 67819);
+    } else {
+    	SendPacket(sock, 224, 0, 0, addr4, 67819);
+    }
+    
     close(sock);
     sock = -1;
 
@@ -60,9 +66,11 @@ int SendData(int addr4)
 
 int main(int argc, char **argv)
 {
+	bool broadcast = true;
+
 	while(1) {
 		for(int i = 23; i <= 255; i++) {
-			SendData(i);
+			SendData(broadcast, i);
 		}
 
 		sleep(1);
