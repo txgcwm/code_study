@@ -1,11 +1,12 @@
 #include <wolfssl/wolfcrypt/aes.h>
 #include <wolfssl/ssl.h>
+#include <string>
 
 #include "base64.h"
 
 
 
-int AesCbcPkcs5Decrypt(const byte *key, const int keysz, const byte *iv, 
+static int AesCbcPkcs5Decrypt(const byte *key, const int keysz, const byte *iv, 
 						const byte *cipher, const int ciphersz, byte *plain, int &outlen)
 {
 	int ret = -1;
@@ -26,6 +27,41 @@ int AesCbcPkcs5Decrypt(const byte *key, const int keysz, const byte *iv,
 		outlen = ciphersz - plain[ciphersz - 1];
 		plain[outlen] = '\0';
 	} while(0);
+
+	return ret;
+}
+
+static int AesCbcPkcs5Encrypt(const byte *key, const int keysz, const byte *iv, 
+						const byte *plain, const int plainsz, byte *cipher, int &outlen)
+{
+	int ret = -1;
+	Aes dec;
+	byte *temp = NULL;
+	int left = plainsz % AES_BLOCK_SIZE;
+
+	outlen = plainsz + AES_BLOCK_SIZE - left;
+
+	temp = (byte *)malloc(outlen);
+
+	memset(temp, AES_BLOCK_SIZE - left, outlen);
+
+	memcpy(temp, plain, plainsz);
+
+	do {
+		ret = wc_AesSetKey(&dec, key, keysz, iv, AES_ENCRYPTION);
+		if (ret != 0) {
+			break;
+		}
+
+		ret = wc_AesCbcEncrypt(&dec, cipher, temp, outlen);
+		if (ret != 0) {
+			outlen = 0;
+			break;
+		}
+	} while(0);
+
+	free(temp);
+	temp = NULL;
 
 	return ret;
 }
@@ -54,8 +90,27 @@ int DecryptBase64Aes(const char *key, const char *iv, const char *enc, char *val
 	return 0;
 }
 
-int EncypptBase64Aes(const char *key, const char *iv, const char *text, char *value)
+int EncypptBase64Aes(const char *key, const char *iv, const char *text, std::string &bval)
 {
+	byte *aesenc = NULL;
+	int alen = strlen(text) + AES_BLOCK_SIZE - strlen(text) % AES_BLOCK_SIZE;
+
+	aesenc = (byte *)malloc(alen);
+
+	AesCbcPkcs5Encrypt((const byte*)key, 16, (const byte*)iv, (const byte*)text, strlen(text), aesenc, alen);
+
+	size_t blen = (alen * 4) / 3;
+	char *value = (char *)malloc(blen);
+
+	base64_encode((char *)aesenc, alen, value, &blen);
+
+	bval = value;
+
+	free(value);
+	value = NULL;
+
+	free(aesenc);
+	aesenc = NULL;
 
 	return 0;
 }
