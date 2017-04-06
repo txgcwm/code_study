@@ -1,20 +1,24 @@
 #include <sys/types.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
+#include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
 #include <netdb.h>
+#include <fcntl.h>
+
+
 
 #define MCAST_PORT 		5353
 #define MCAST_ADDR 		"224.0.0.251"
 #define MCAST_INTERVAL 	5
-#define BUFF_SIZE 		256
+#define BUFF_SIZE 		512
 
 
-#if 0
+#if 1
 int main(int argc, char*argv[])
 {
     int s;
@@ -39,7 +43,7 @@ int main(int argc, char*argv[])
     // }
 
     int loop = 1;
-    err = setsockopt(s,IPPROTO_IP, IP_MULTICAST_LOOP,&loop, sizeof(loop));
+    err = setsockopt(s, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof(loop));
     if(err < 0) {
         perror("setsockopt():IP_MULTICAST_LOOP");
         return -3;
@@ -50,8 +54,7 @@ int main(int argc, char*argv[])
     mreq.imr_multiaddr.s_addr = inet_addr(MCAST_ADDR);
     mreq.imr_interface.s_addr = htonl(INADDR_ANY);
 
-    err = setsockopt(s, IPPROTO_IP, IP_ADD_MEMBERSHIP,&mreq, sizeof
-    (mreq));
+    err = setsockopt(s, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(mreq));
     if (err < 0) {
         perror("setsockopt():IP_ADD_MEMBERSHIP");
         return -4;
@@ -62,7 +65,7 @@ int main(int argc, char*argv[])
     char buff[BUFF_SIZE];
     int n = 0;
 
-    for(times = 0;times<5;times++) {
+    for(times = 0;times < 5; times++) {
         addr_len = sizeof(local_addr);
 
         memset(buff, 0, BUFF_SIZE);
@@ -77,24 +80,14 @@ int main(int argc, char*argv[])
         sleep(MCAST_INTERVAL);
     }
 
-    err = setsockopt(s, IPPROTO_IP, IP_DROP_MEMBERSHIP,&mreq, sizeof(mreq));
+    err = setsockopt(s, IPPROTO_IP, IP_DROP_MEMBERSHIP, &mreq, sizeof(mreq));
 
     close(s);
 
     return 0;
 }
-#endif
-
-
-#include <sys/socket.h>  
-#include <sys/types.h>  
-#include <netinet/in.h>  
-#include <unistd.h>  
-#include <fcntl.h>  
-#include <errno.h>
-
-#define BUF_SIZE           512  
-  
+#else
+ 
 int create_udp_socket(char *ip, int port)
 {  
     int onOff = 1;
@@ -168,7 +161,7 @@ int main(int argc, char **argv)
 
     return 0; 
 }   
-
+#endif
 
 
 

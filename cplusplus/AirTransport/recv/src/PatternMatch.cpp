@@ -58,6 +58,7 @@ bool CPatternMatch::QueryIdentificationPackage(std::vector<int> data)
 	return bget;
 }
 
+#if 0
 bool CPatternMatch::AnalyticSequenceData(std::vector<int> data, std::string &record)
 {
   	int length = -1;
@@ -99,13 +100,59 @@ bool CPatternMatch::AnalyticSequenceData(std::vector<int> data, std::string &rec
 
   	return false;
 }
+#else
+static bool lessmark(const int& ele1, const int& ele2)
+{
+    return ele1 > ele2;
+}
+
+bool CPatternMatch::AnalyticSequenceData(std::vector<int> data, std::string &record)
+{
+  int length = -1;
+  unsigned short ccrc8 = 0;
+
+  if(((data[0] & 0xff0) == 0x3f0) && ((data[1] & 0xff0) == 0x3e0)
+      && ((data[2] & 0xff0) == 0x3d0) && ((data[3] & 0xff0) == 0x3c0)) {
+    ccrc8 = ((data[3] & 0xf) << 12) | ((data[2] & 0xf) << 8) | ((data[1] & 0xf) << 4) | (data[0] & 0xf);
+  } else {
+    return false;
+  }
+
+  if(((data[4] & 0xff0) == 0x3b0)
+      && ((data[5] & 0xff0) == 0x3a0)) {
+    length = ((data[5] & 0xf) << 4) | (data[4] & 0xf);
+  }
+
+  if(length >= 0 && data.size() >= 2 * length + CRC_LEN_TOTAL) {
+      char raw[32] = {0};
+
+      for(int i = CRC_LEN_TOTAL; i < 2 * length + CRC_LEN_TOTAL; i += 2) {
+        // printf("%x %x\n", (data[i + 1] & 0xff0), (data[i] & 0xff0));
+        // printf("%x ", ((data[i + 1] & 0xf) << 4) | (data[i] & 0xf));
+        raw[(i - CRC_LEN_TOTAL)/2] = ((data[i + 1] & 0xf) << 4) | (data[i] & 0xf);
+      }
+
+      unsigned short dcrc8 = crc_ccitt((unsigned char*)raw, length);
+      if(dcrc8 == ccrc8) {
+        printf("ccrc16(%d) = dcrc16(%d) size(%ld), len(%d), raw data(%s)\n",
+                ccrc8, dcrc8, data.size(), length, raw);
+        record = raw;
+        return true;
+      }
+    }
+
+  return false;
+}
+#endif
 
 bool CPatternMatch::Analyze(std::vector<int> data, int position, int magic, std::string &record)
 {
 	bool res = false;
 	int hlen = data.size() - position - 1;
-	int expect = 2;
 	std::vector<int> hybrid;
+
+#if 0
+	int expect = 2;
 
 	for(int i = 0; i < hlen; i++) {
 		int value = data[position + 1 + i] - magic + 21;
@@ -126,6 +173,31 @@ bool CPatternMatch::Analyze(std::vector<int> data, int position, int magic, std:
 			break;
 		}
 	}
+#else
+	int expect = 0x3f;
+
+  	for(int i = data.size() - 1; i > position; i--) {
+	    int value = data[i] - magic + 21;
+	    int index = (value & 0x0ff0) >> 4;
+
+	    if(index < 2) {
+	      break;
+	    }
+
+	    printf("raw: %d, value: %d, index: %d, expect: %d\n", data[i], value, index, expect);
+
+	    if(index == expect || index == (expect - 1)) {
+	      	hybrid.push_back(value);
+	      	if(index < expect) {
+	        	expect--;
+	      	}
+	    } else {
+	      	break;
+	    }
+  	}
+
+  	std::sort(hybrid.begin(), hybrid.end(), lessmark);
+#endif
 
 	if(hybrid.size() < CRC_LEN_TOTAL) {
 		return false;
