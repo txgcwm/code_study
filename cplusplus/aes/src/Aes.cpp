@@ -103,8 +103,9 @@ int EncypptBase64Aes(const char *key, const char *iv, const char *text, std::str
 	char *value = (char *)malloc(blen);
 
 	base64_encode((char *)aesenc, alen, value, &blen);
+	printf("value: %s:%s, len(%d, %d)\n", aesenc, value, blen, strlen(value));
 
-	bval = value;
+    bval.assign(value, blen);
 
 	free(value);
 	value = NULL;
