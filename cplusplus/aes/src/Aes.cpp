@@ -117,4 +117,3 @@ int EncypptBase64Aes(const char *key, const char *iv, const char *text, std::str
 }
 
 
-// http://www.bubuko.com/infodetail-1128539.html

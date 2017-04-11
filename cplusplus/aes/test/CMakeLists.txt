@@ -17,3 +17,8 @@ target_link_libraries(TestWsslEnDecrypt wfsslencry wolfssl pthread)
 #################################
 add_executable(TestAes TestAes.cpp)
 target_link_libraries(TestAes wfsslencry wolfssl pthread)
+
+
+#################################
+add_executable(TestSslAes TestSslAes.cpp)
+target_link_libraries(TestSslAes wfsslencry wolfssl ssl crypto pthread)
