@@ -58,7 +58,7 @@ bool CPatternMatch::QueryIdentificationPackage(std::vector<int> data)
 	return bget;
 }
 
-#if 0
+#if 1
 bool CPatternMatch::AnalyticSequenceData(std::vector<int> data, std::string &record)
 {
   	int length = -1;
@@ -151,7 +151,7 @@ bool CPatternMatch::Analyze(std::vector<int> data, int position, int magic, std:
 	int hlen = data.size() - position - 1;
 	std::vector<int> hybrid;
 
-#if 0
+#if 1
 	int expect = 2;
 
 	for(int i = 0; i < hlen; i++) {
