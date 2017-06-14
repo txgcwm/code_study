@@ -54,13 +54,21 @@ int main(int argc, char **argv)
     const char key[] = "0123456789abcdef";
     char data[] = "hello world Be careful of the length of string";
     
+    std::string day;
     std::string encrypt;
-
- 	HMAC_Sha256_Encrypt(key, data, encrypt);
-
- 	std::string day;
+ 	std::string DateKey;
+ 	std::string DateRegionKey;
+ 	std::string DateRegionServiceKey;
+ 	std::string SigningKey;
 
  	GetStringTime(day);
+
+ 	HMAC_Sha256_Encrypt(key, day, DateKey);
+ 	HMAC_Sha256_Encrypt(DateKey, "aws-region", DateRegionKey);
+ 	HMAC_Sha256_Encrypt(DateRegionKey, "aws-service", DateRegionServiceKey);
+ 	HMAC_Sha256_Encrypt(DateRegionServiceKey, "aws4_request", SigningKey);
+ 	
+ 	HMAC_Sha256_Encrypt(SigningKey, data, encrypt);
 
     return 0;
 }
