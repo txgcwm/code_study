@@ -51,8 +51,8 @@ void GetStringTime(std::string day)
 
 int main(int argc, char **argv)
 {
-    const char key[] = "0123456789abcdef";
-    char data[] = "hello world Be careful of the length of string";
+    const char key[] = "123456";
+    char data[] = "hello world";
     
     std::string day;
     std::string encrypt;
@@ -64,8 +64,8 @@ int main(int argc, char **argv)
  	GetStringTime(day);
 
  	HMAC_Sha256_Encrypt(key, day, DateKey);
- 	HMAC_Sha256_Encrypt(DateKey, "aws-region", DateRegionKey);
- 	HMAC_Sha256_Encrypt(DateRegionKey, "aws-service", DateRegionServiceKey);
+ 	HMAC_Sha256_Encrypt(DateKey, "china", DateRegionKey);
+ 	HMAC_Sha256_Encrypt(DateRegionKey, "xmpp", DateRegionServiceKey);
  	HMAC_Sha256_Encrypt(DateRegionServiceKey, "aws4_request", SigningKey);
  	
  	HMAC_Sha256_Encrypt(SigningKey, data, encrypt);
