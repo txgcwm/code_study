@@ -6,13 +6,11 @@
 
 
 
-void HMAC_Sha256_Encrypt(std::string key, std::string text, std::string &ciphertext)
+void HMAC_Sha256_Encrypt(std::string key, std::string text, std::string &cipher)
 {
 	unsigned char result[128] = {0};
-    unsigned int len = 0;
+    unsigned int len = 128;
     HMAC_CTX ctx;
-
-    memset(&ctx, 0, sizeof(HMAC_CTX));
 
     HMAC_CTX_init(&ctx);
 
@@ -22,12 +20,12 @@ void HMAC_Sha256_Encrypt(std::string key, std::string text, std::string &ciphert
     HMAC_Final(&ctx, result, &len);
     HMAC_CTX_cleanup(&ctx);
  
-    ciphertext = (char *)result;
+    cipher = (char *)result;
 
     printf("HMAC digest: ");
  
     for (int i = 0; i != len; i++) {
-        printf("%02x", (unsigned int)result[i]);
+        printf("%02x", result[i]);
     }
  
     printf("\n");
@@ -35,7 +33,7 @@ void HMAC_Sha256_Encrypt(std::string key, std::string text, std::string &ciphert
     return;
 }
 
-void GetStringTime(std::string day)
+void GetStringTime(std::string& day)
 {
 	char tmp[32] = {0};
 	time_t t = time(0); 
@@ -49,13 +47,9 @@ void GetStringTime(std::string day)
     return;
 }
 
-int main(int argc, char **argv)
+void SignatureWithHmacSha256(std::string key, std::string data, std::string& sign)
 {
-    const char key[] = "123456";
-    char data[] = "hello world";
-    
-    std::string day;
-    std::string encrypt;
+	std::string day;
  	std::string DateKey;
  	std::string DateRegionKey;
  	std::string DateRegionServiceKey;
@@ -68,7 +62,24 @@ int main(int argc, char **argv)
  	HMAC_Sha256_Encrypt(DateRegionKey, "xmpp", DateRegionServiceKey);
  	HMAC_Sha256_Encrypt(DateRegionServiceKey, "aws4_request", SigningKey);
  	
- 	HMAC_Sha256_Encrypt(SigningKey, data, encrypt);
+ 	HMAC_Sha256_Encrypt(SigningKey, data, sign);
+
+	return;
+}
+
+int main(int argc, char **argv)
+{
+    const char key[] = "123456";
+    char data[] = "hello world";
+    std::string sign;
+    
+    SignatureWithHmacSha256(key, data, sign);
+
+    for(int i = 0; i < sign.size(); i++) {
+    	printf("%02x", (unsigned char)sign[i]);
+    }
+ 
+    printf("\n");
 
     return 0;
 }
