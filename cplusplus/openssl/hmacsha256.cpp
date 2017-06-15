@@ -6,26 +6,33 @@
 
 
 
-void HMAC_Sha256_Encrypt(std::string key, std::string text, std::string &cipher)
+void GetStringTime(char* day, int size)
 {
-	unsigned char result[128] = {0};
-    unsigned int len = 128;
+	time_t t = time(0); 
+     
+    // strftime(tmp, sizeof(tmp), "%Y%m%d", localtime(&t));
+    strftime(day, size, "%Y%m%d", gmtime(&t)); 
+
+    return;
+}
+
+void HMAC_Sha256_Encrypt(void* key, int key_len, unsigned char* text,
+							unsigned char* cipher, unsigned int *plen)
+{
     HMAC_CTX ctx;
 
     HMAC_CTX_init(&ctx);
 
     // e.g EVP_md5(), EVP_sha224, EVP_sha512, etc
-    HMAC_Init_ex(&ctx, key.c_str(), key.size(), EVP_sha256(), NULL);
-    HMAC_Update(&ctx, (unsigned char*)&text[0], text.size());
-    HMAC_Final(&ctx, result, &len);
+    HMAC_Init_ex(&ctx, key, key_len, EVP_sha256(), NULL);
+    HMAC_Update(&ctx, text, strlen((const char*)text));
+    HMAC_Final(&ctx, cipher, plen);
     HMAC_CTX_cleanup(&ctx);
- 
-    cipher = (char *)result;
 
     printf("HMAC digest: ");
- 
-    for (int i = 0; i != len; i++) {
-        printf("%02x", result[i]);
+
+    for (int i = 0; i < *plen; i++) {
+        printf("%02x", cipher[i]);
     }
  
     printf("\n");
@@ -33,49 +40,36 @@ void HMAC_Sha256_Encrypt(std::string key, std::string text, std::string &cipher)
     return;
 }
 
-void GetStringTime(std::string& day)
+void SignatureWithHmacSha256(unsigned char* key, unsigned char* data, unsigned char* sign)
 {
-	char tmp[32] = {0};
-	time_t t = time(0); 
-     
-    // strftime(tmp, sizeof(tmp), "%Y%m%d", localtime(&t));
-    strftime(tmp, sizeof(tmp), "%Y%m%d", gmtime(&t)); 
-    day = tmp;
+	unsigned int len = 0;
+	char day[20] = {0};
+ 	unsigned char DateKey[32] = {0};
+ 	unsigned char DateRegionKey[32] = {0};
+ 	unsigned char DateRegionServiceKey[32] = {0};
+ 	unsigned char SigningKey[32] = {0};
 
-    printf("(%s)\n", day.c_str());
+ 	GetStringTime(day, sizeof(day));
 
-    return;
-}
+ 	HMAC_Sha256_Encrypt((void *)key, strlen((const char*)key), (unsigned char*)day, DateKey, &len);
+ 	HMAC_Sha256_Encrypt((void *)DateKey, len, (unsigned char*)"china", DateRegionKey, &len);
+ 	HMAC_Sha256_Encrypt((void *)DateRegionKey, len, (unsigned char*)"xmpp", DateRegionServiceKey, &len);
+ 	HMAC_Sha256_Encrypt((void *)DateRegionServiceKey, len, (unsigned char*)"aws4_request", SigningKey, &len);
 
-void SignatureWithHmacSha256(std::string key, std::string data, std::string& sign)
-{
-	std::string day;
- 	std::string DateKey;
- 	std::string DateRegionKey;
- 	std::string DateRegionServiceKey;
- 	std::string SigningKey;
-
- 	GetStringTime(day);
-
- 	HMAC_Sha256_Encrypt(key, day, DateKey);
- 	HMAC_Sha256_Encrypt(DateKey, "china", DateRegionKey);
- 	HMAC_Sha256_Encrypt(DateRegionKey, "xmpp", DateRegionServiceKey);
- 	HMAC_Sha256_Encrypt(DateRegionServiceKey, "aws4_request", SigningKey);
- 	
- 	HMAC_Sha256_Encrypt(SigningKey, data, sign);
+ 	HMAC_Sha256_Encrypt((void *)SigningKey, len, data, sign, &len);
 
 	return;
 }
 
 int main(int argc, char **argv)
 {
-    const char key[] = "123456";
-    char data[] = "hello world";
-    std::string sign;
+    unsigned char key[] = "123456";
+    unsigned char data[] = "hello";
+    unsigned char sign[32];
     
     SignatureWithHmacSha256(key, data, sign);
 
-    for(int i = 0; i < sign.size(); i++) {
+    for(int i = 0; i < 32; i++) {
     	printf("%02x", (unsigned char)sign[i]);
     }
  
