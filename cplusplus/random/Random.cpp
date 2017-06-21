@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <iterator>
 #include <vector>
-
+#include <string>
 
 
 #define BASE_PORT 	18888
@@ -25,7 +25,20 @@ int getrandom(int min, int max, int seed)
     return nu;
 }
 
-int main(int argc, char **argv)
+void getRandStr(std::string& randstr, int num)
+{
+    std::string str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+    srand((unsigned int)time((time_t *)NULL));
+
+    for(int i = 0; i < num; i++) {
+        randstr += str[(rand()%str.size())];
+    }
+
+    return;
+}
+
+void GenerateRandPort()
 {
 	int count = 0;
 	int seed = 0;
@@ -52,6 +65,17 @@ int main(int argc, char **argv)
 	for(int i = 0; i < vports.size(); i++) {
 		printf("%d ", vports[i]);
 	}
+
+	return;
+}
+
+int main(int argc, char **argv)
+{
+	std::string rand;
+
+	getRandStr(rand, 4);
+
+	printf("%s\n", rand.c_str());
 
 	return 0;
 }
