@@ -48,9 +48,10 @@ int main(int argc, char** argv)
 	int type = 2;
 	char intbuf[24] = {};
 
-	int2str(type, intbuf);
+	// int2str(type, intbuf);
 
-	printf("type(%d)(%s)\n", type, intbuf);
+	// printf("type(%d)(%s)\n", type, intbuf);
+	printf("type(%d)(%s)\n", type, int2str(type, intbuf));
 
 	return 0;
 }
