@@ -1,18 +1,18 @@
 #ifndef __CONFIGURE_H__
 #define __CONFIGURE_H__
 
-#include <string> 
-#include <vector> 
+#include <string>
+#include <vector>
 
 
-class Configure 
-{ 
-public: 
+class Configure
+{
+public:
     int addItem(std::string str);
     std::string getItem(int index);
     int getSize();
 
-private: 
+private:
     std::vector<std::string> vItems;
 };
 
