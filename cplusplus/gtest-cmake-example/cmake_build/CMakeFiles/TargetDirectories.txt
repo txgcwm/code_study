@@ -1,1 +1,0 @@
-/srv/example/mine/code_study/cplusplus/gtest-cmake-example/cmake_build/build/configure/CMakeFiles/test_configure.dir
