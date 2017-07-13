@@ -31,10 +31,14 @@ class StockInfo:
     def GetStockStrByNum(num):
         #f= urllib.request.urlopen('http://qt.gtimg.cn/q=s_'+ str(num))
 		f = urllib2.urlopen('http://qt.gtimg.cn/q=s_'+ str(num))
-		if(debug): print(f.geturl())
-		if(debug): print(f.info())
+
+		if(debug):
+            print(f.geturl())
+
+		if(debug):
+            print(f.info())
         #return like: v_s_sz000858="51~五 粮 液~000858~18.10~0.01~0.06~94583~17065~~687.07";
-        return f.readline()
+        #return f.readline()
         f.close()
 
     def ParseResultStr(resultstr):
