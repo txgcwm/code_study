@@ -34,7 +34,7 @@ int main(int argc, char **argv)
 
     sClient = socket(AF_INET, SOCK_DGRAM, 0);  
     if (sClient < 0) {  
-        printf("socket()\n");  
+        printf("socket\n");  
         return 0;  
     }
 
@@ -42,7 +42,7 @@ int main(int argc, char **argv)
     if (nSend == 0) {  
         return 0;  
     } else if (nSend < 0) {  
-        printf("sendto()\n");  
+        printf("sendto\n");  
         return 0;  
     }
 
@@ -50,5 +50,6 @@ int main(int argc, char **argv)
 
     return 0;  
 }
- 
+
+
 // g++ -o client client.cpp
