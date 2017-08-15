@@ -8,7 +8,6 @@
 #include <fcntl.h>
 #include <string>
 
-#define IP_FOUND 		"IP_FOUND"
 
 
 int GetRouteInfo(int port, std::string &ssid, std::string password, int& mode)
@@ -60,14 +59,12 @@ int GetRouteInfo(int port, std::string &ssid, std::string password, int& mode)
         default:
             if (FD_ISSET(sock, &readfd)) {
                 count = recvfrom(sock, buffer, 1024, 0, (struct sockaddr*)&from_addr, (socklen_t *)&from_len);
-                if (strstr(buffer, IP_FOUND)) {
-                    printf("IP: %s, Port: %d\n",
-                            (char *)inet_ntoa(from_addr.sin_addr), ntohs(from_addr.sin_port));
 
-                    // memcpy(buffer, IP_FOUND_ACK, strlen(IP_FOUND_ACK) + 1);
-                    count = sendto(sock, buffer, strlen(buffer), 0,
-                                    (struct sockaddr*) &from_addr, from_len);
-                }
+                printf("IP: %s, Port: %d\n",
+                        (char *)inet_ntoa(from_addr.sin_addr), ntohs(from_addr.sin_port));
+
+                count = sendto(sock, buffer, strlen(buffer), 0,
+                                (struct sockaddr*) &from_addr, from_len);
             }
 
             break;
