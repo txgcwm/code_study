@@ -27,7 +27,7 @@ int SendBroadcastData(char *ifname, int port)
     socklen_t from_len = sizeof(from_addr);
     int count = -1;
     fd_set readfd;
-    char buffer[1024];
+    char buffer[1024] = {0};
     struct timeval timeout;
 
     sock = socket(AF_INET, SOCK_DGRAM, 0);

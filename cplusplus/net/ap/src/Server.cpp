@@ -19,7 +19,7 @@ int GetRouteInfo(int port)
     socklen_t from_len = sizeof(struct sockaddr_in);
     int count = -1;
     fd_set readfd;
-    char buffer[1024];
+    char buffer[1024] = {0};
     struct timeval timeout;
 
     sock = socket(AF_INET, SOCK_DGRAM, 0);
