@@ -6,11 +6,12 @@
 #include <string.h>
 #include <stdio.h>
 #include <fcntl.h>
+#include <string>
 
 #define IP_FOUND 		"IP_FOUND"
 
 
-int GetRouteInfo(int port)
+int GetRouteInfo(int port, std::string &ssid, std::string password, int& mode)
 {
     int ret = -1;
     int sock = -1;

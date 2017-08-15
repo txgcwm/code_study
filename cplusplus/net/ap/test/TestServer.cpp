@@ -3,7 +3,11 @@
 
 int main(int argc, char** argv)
 {
-    GetRouteInfo(9999);
+    std::string ssid;
+    std::string password;
+    int mode;
+
+    GetRouteInfo(9999, ssid, password, mode);
 
     return 0;
 }

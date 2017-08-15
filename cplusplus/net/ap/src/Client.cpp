@@ -14,7 +14,8 @@
 #define IP_FOUND 		"IP_FOUND"
 
 
-int SendBroadcastData(char *ifname, int port)
+int SendBroadcastData(char* ifname, int port,
+                        char* ssid, char* password, int mode)
 {
     int ret = -1;
     int sock = -1;

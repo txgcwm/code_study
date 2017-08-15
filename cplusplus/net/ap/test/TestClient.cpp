@@ -5,7 +5,11 @@
 
 int main(int argc, char** argv)
 {
-    SendBroadcastData((char*)IFNAME, 9999);
+    char* ssid = (char*)"test";
+    char* password = (char*)"12345678";
+    int mode = 1;
+
+    SendBroadcastData((char*)IFNAME, 9999, ssid, password, mode);
 
     return 0;
 }
