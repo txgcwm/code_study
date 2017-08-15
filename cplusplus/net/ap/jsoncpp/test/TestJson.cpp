@@ -44,6 +44,36 @@ int ParseBroadcastData(std::string data, std::string& ssid,
     return 0;
 }
 
+/*
+{
+    "result": "0"
+}
+*/
+int FormateResultData(std::string& data)
+{
+    Json::Value root;
+
+    root["result"] = 0;
+
+    data = root.toStyledString();
+
+    return 0;
+}
+
+int ParseResultData(std::string data, int& result)
+{
+    Json::Reader reader;
+    Json::Value value;
+
+    if (!reader.parse(data, value)) {
+        return -1;
+    }
+
+    result = value["result"].asInt();
+
+    return 0;
+}
+
 int main(int argc, char** argv)
 {
     std::string data;
@@ -60,6 +90,16 @@ int main(int argc, char** argv)
     
     printf("ssid(%s), password(%s), mode(%d)\n",
             ssid.c_str(), password.c_str(), mode);
+
+    FormateResultData(data);
+
+    printf("data(%s)\n", data.c_str());
+
+    int result = 0;
+
+    ParseResultData(data, result);
+
+    printf("result(%d)\n", result);
 
     return 0;
 }
