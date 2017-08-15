@@ -15,8 +15,8 @@ target_link_libraries(TestAes ap)
 
 #################################
 add_executable(TestClient TestClient.cpp)
-target_link_libraries(TestClient ap)
+target_link_libraries(TestClient ap jsoncpp)
 
 #################################
 add_executable(TestServer TestServer.cpp)
-target_link_libraries(TestServer ap)
+target_link_libraries(TestServer ap jsoncpp)

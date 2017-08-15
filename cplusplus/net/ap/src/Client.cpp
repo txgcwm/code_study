@@ -9,12 +9,12 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdio.h>
+#include <string>
+
+#include "Message.h"
 
 
-#define IP_FOUND 		"IP_FOUND"
-
-
-int SendBroadcastData(char* ifname, int port,
+int SendBroadcastData(int& result, char* ifname, int port,
                         char* ssid, char* password, int mode)
 {
     int ret = -1;
@@ -77,11 +77,15 @@ int SendBroadcastData(char* ifname, int port,
     int times = 10;
     int i = 0;
 
+    std::string data;
+
+    FormateBroadcastData(data, ssid, password, mode);
+
     for (i = 0; i < times; i++) {
         timeout.tv_sec = 2;  //超时时间为2秒
         timeout.tv_usec = 0;
 
-        ret = sendto(sock, IP_FOUND, strlen(IP_FOUND), 0,
+        ret = sendto(sock, data.c_str(), data.size(), 0,
                 (struct sockaddr*) &broadcast_addr, sizeof(broadcast_addr));
         if (ret < 0) {
             continue;
@@ -90,7 +94,7 @@ int SendBroadcastData(char* ifname, int port,
         FD_ZERO(&readfd);  //文件描述符清0
         FD_SET(sock, &readfd);  //将套接字文件描述符加入到文件描述符集合中
         
-        ret = select(sock + 1, &readfd, NULL, NULL, &timeout); //select侦听是否有数据到来
+        ret = select(sock + 1, &readfd, NULL, NULL, &timeout);
         switch (ret) {
         case -1:
             break;
@@ -100,10 +104,14 @@ int SendBroadcastData(char* ifname, int port,
             break;
 
         default:
-            if (FD_ISSET(sock,&readfd)) {
+            if (FD_ISSET(sock, &readfd)) {
                 count = recvfrom(sock, buffer, 1024, 0,
-                        (struct sockaddr*) &from_addr, (socklen_t *)&from_len); //from_addr为服务器端地址
-                printf("recvmsg is %s\n", buffer);
+                        (struct sockaddr*) &from_addr, (socklen_t *)&from_len);
+                if(count > 0) {
+                    ParseResultData(buffer, result);
+                    return 0;
+                }
+                
                 return -1;
             }
 

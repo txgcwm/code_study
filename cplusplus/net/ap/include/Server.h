@@ -3,6 +3,6 @@
 
 #include <string>
 
-int GetRouteInfo(int port, std::string &ssid, std::string password, int& mode);
+int GetRouteInfo(int port, std::string &ssid, std::string& password, int& mode);
 
 #endif

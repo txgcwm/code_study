@@ -8,9 +8,10 @@
 #include <fcntl.h>
 #include <string>
 
+#include "Message.h"
 
 
-int GetRouteInfo(int port, std::string &ssid, std::string password, int& mode)
+int GetRouteInfo(int port, std::string &ssid, std::string& password, int& mode)
 {
     int ret = -1;
     int sock = -1;
@@ -59,18 +60,26 @@ int GetRouteInfo(int port, std::string &ssid, std::string password, int& mode)
         default:
             if (FD_ISSET(sock, &readfd)) {
                 count = recvfrom(sock, buffer, 1024, 0, (struct sockaddr*)&from_addr, (socklen_t *)&from_len);
-
-                printf("IP: %s, Port: %d\n",
+                if(count > 0) {
+                    printf("IP: %s, Port: %d\n",
                         (char *)inet_ntoa(from_addr.sin_addr), ntohs(from_addr.sin_port));
 
-                count = sendto(sock, buffer, strlen(buffer), 0,
+                    ParseBroadcastData(buffer, ssid, password, mode);
+
+                    std::string data;
+                    FormateResultData(data);
+
+                    count = sendto(sock, data.c_str(), data.size(), 0,
                                 (struct sockaddr*) &from_addr, from_len);
+
+                    return 0;
+                }     
             }
 
             break;
         }
     }
 
-    return 0;
+    return -1;
 }
 

@@ -1,4 +1,5 @@
 include_directories(
+	${TOPDIR}/jsoncpp/include/
 	${TOPDIR}/include/
 )
 
