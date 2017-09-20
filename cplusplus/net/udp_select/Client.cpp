@@ -16,6 +16,12 @@
 
 
 
+CClient *CClient::Instance()
+{
+    static CClient client;
+    return &client;
+}
+
 CClient::CClient()
 {
 }
@@ -51,7 +57,7 @@ int CClient::SendData(char *pData, int len)
     if(m_sock < 0) {
         return -1;
     }
-    
+
     sockaddr_in ser;
 
     ser.sin_family = AF_INET;
