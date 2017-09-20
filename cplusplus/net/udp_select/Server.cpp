@@ -9,45 +9,75 @@
 #include <string.h>
 #include <stdio.h>
 #include <fcntl.h>
+#ifdef __linux__
+    #include <sys/prctl.h>
+#endif
+
+#include "Server.h"
 
 
-#define PORT_A  11111  
 
-int main(int argc, char **argv)
-{  
+CServer::CServer()
+: CThreadLoop("Server")
+{
+}
+
+CServer::~CServer()
+{
+}
+
+bool CServer::Start(int port)
+{
+    m_port = port;
+
+    return StartThread();
+}
+
+bool CServer::Stop()
+{
+    return StopThread();
+}
+
+void CServer::EventHandleLoop()
+{
     int sock = -1; 
-    int nPortA = PORT_A;
+    int nRet;
+    char recv_buf[1024];
     fd_set rfd;
     timeval timeout;
     sockaddr_in addr;
-    char recv_buf[1024];
     socklen_t nRecLen;
     sockaddr_in cli;
-    int nRet;
 
     sock = socket(AF_INET, SOCK_DGRAM, 0); 
     if (sock <= 0) {  
         printf("socket\n");  
-        return -1;  
+        return;  
     }  
 
     memset(&addr, 0, sizeof(addr));  
       
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(nPortA);
+    addr.sin_port = htons(m_port);
     addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
     if (bind(sock, (sockaddr*)&addr, sizeof(addr)) < 0) {  
         printf("bind\n");  
-        return -1;  
+        return;  
     }  
 
-    timeout.tv_sec = 6;   
+    timeout.tv_sec = 30;   
     timeout.tv_usec = 0;  
       
     memset(recv_buf, 0, sizeof(recv_buf));
 
-    while(true) {  
+#ifdef __linux__
+    char name[20] = {0};
+
+    prctl(PR_GET_NAME, name);
+#endif
+
+    while(1) {
         FD_ZERO(&rfd);
         FD_SET(sock, &rfd);
           
@@ -71,13 +101,15 @@ int main(int argc, char **argv)
                 printf("%s\n", recv_buf);
             }
         }
+
+        if(WaitForSleep(0) < 0) {
+            break;
+        }
     }
 
     close(sock);
     sock = -1;
 
-	return 0;
-}  
+    return;
+}
 
-
-// g++ -o server server.cpp
