@@ -64,12 +64,7 @@ void CServer::EventHandleLoop()
     if (bind(sock, (sockaddr*)&addr, sizeof(addr)) < 0) {  
         printf("bind\n");  
         return;  
-    }  
-
-    timeout.tv_sec = 30;   
-    timeout.tv_usec = 0;  
-      
-    memset(recv_buf, 0, sizeof(recv_buf));
+    }
 
 #ifdef __linux__
     char name[20] = {0};
@@ -80,7 +75,12 @@ void CServer::EventHandleLoop()
     while(1) {
         FD_ZERO(&rfd);
         FD_SET(sock, &rfd);
-          
+
+        timeout.tv_sec = 30;
+        timeout.tv_usec = 0;
+      
+        memset(recv_buf, 0, sizeof(recv_buf));
+
         nRet = select(sock + 1, &rfd, NULL, NULL, &timeout);
         if (nRet < 0) {
             printf("select\n");
