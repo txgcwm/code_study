@@ -22,3 +22,11 @@ int main(int argc, char** argv)
 	
 	return 0;
 }
+
+/*
+g++ -fprofile-arcs -ftest-coverage -o gcov_test gcov_test.cpp
+./gcov_test
+gcov gcov_test.cpp
+ls
+cat gcov_test.cpp.gcov 
+*/
