@@ -5,11 +5,11 @@ check_file_size()
 {
 	filename=$1
 	((maxsize=$2))
-	
+
 	size=`stat -c "%s" ${filename}`
 
 	[ "${size}" -ge "${maxsize}" ] && exit 1
-	
+
 	echo "The size of ${filename} meets the requirements!"
 }
 
