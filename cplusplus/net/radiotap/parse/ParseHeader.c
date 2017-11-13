@@ -85,7 +85,7 @@ static void print_radiotap_namespace(struct ieee80211_radiotap_iterator *iter)
 	}
 }
 
-int main(int argc, char** argv)
+static void ParseBuffer()
 {
     struct ieee80211_radiotap_iterator iter;
     int err;
@@ -118,6 +118,43 @@ int main(int argc, char** argv)
         }
 
         printf("==================================\n");
+    }
+
+    return;
+}
+
+static void ParseFile(const char* filename)
+{
+
+    return;
+}
+
+int main(int argc, char** argv)
+{
+    int res = 0;
+    int action = 0;
+    char file[256] = {0};
+
+    while((res = getopt(argc, argv, "?a:f:h")) != -1) {
+        switch(res) {
+        case 'a':
+            action = atoi(optarg);
+            break;
+
+        case 'f':
+            memcpy(file, optarg, strlen(optarg));
+            break;
+
+        case 'h':
+        default:
+            break;
+        }
+    }
+
+    if(action == 0) {
+        ParseBuffer();
+    } else if (action == 1) {
+        ParseFile(file);
     }
 
     return 0;
