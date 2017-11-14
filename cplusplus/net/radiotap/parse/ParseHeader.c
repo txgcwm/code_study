@@ -1,7 +1,11 @@
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <stdint.h>
 #include <endian.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <string.h>
 #include <stdio.h>
 
@@ -85,7 +89,7 @@ static void print_radiotap_namespace(struct ieee80211_radiotap_iterator *iter)
 	}
 }
 
-static void ParseBuffer()
+static int ParseBuffer()
 {
     struct ieee80211_radiotap_iterator iter;
     int err;
@@ -120,13 +124,28 @@ static void ParseBuffer()
         printf("==================================\n");
     }
 
-    return;
+    return 0;
 }
 
-static void ParseFile(const char* filename)
+static int ParseFile(const char* filename)
 {
+	int fd = -1;
+	char buffer[1024] = {0};
 
-    return;
+	fd = open(filename, O_RDONLY);
+	if(fd < 0) {
+		printf("can not open file(%s)\n", filename);
+		return -1;
+	}
+
+	while((read(fd, buffer, 1024)) > 0) {
+		
+	}
+	
+	close(fd);
+	fd = -1;
+	
+    return 0;
 }
 
 int main(int argc, char** argv)
