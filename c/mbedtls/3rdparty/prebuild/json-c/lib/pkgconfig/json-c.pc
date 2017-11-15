@@ -1,0 +1,12 @@
+prefix=/home/wm8996/code/git/code_study/c/mbedtls/3rdparty/prebuild/json-c
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: json-c
+Description: A JSON implementation in C
+Version: 0.12.99
+Requires:
+Libs.private: 
+Libs: -L${libdir} -ljson-c
+Cflags: -I${includedir}/json-c
