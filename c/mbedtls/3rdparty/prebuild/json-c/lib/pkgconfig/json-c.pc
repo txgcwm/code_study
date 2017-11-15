@@ -1,4 +1,4 @@
-prefix=/home/wm8996/code/git/code_study/c/mbedtls/3rdparty/prebuild/json-c
+prefix=/srv/code_study/c/mbedtls/3rdparty/prebuild/json-c
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include
