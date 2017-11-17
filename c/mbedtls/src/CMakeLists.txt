@@ -30,5 +30,9 @@ add_executable(libubox-md5-test libubox-md5-test.c)
 target_link_libraries(libubox-md5-test ubox)
 
 #################################
+add_executable(libubox-base64-test libubox-base64-test.c)
+target_link_libraries(libubox-base64-test ubox)
+
+#################################
 add_executable(libubox-list-test libubox-list-test.c)
 target_link_libraries(libubox-list-test ubox)
