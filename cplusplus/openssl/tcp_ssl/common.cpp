@@ -10,14 +10,11 @@
 
 
 
-void tcpserver_init(int *sockfd)
+void tcpserver_init(int *sockfd, int port)
 {
     socklen_t len;
     struct sockaddr_in my_addr;
-    unsigned int myport, lisnum;
-
-    myport = 7838;
-    lisnum = 1;
+    unsigned int lisnum = 1;
 
     if((*sockfd = socket(PF_INET, SOCK_STREAM, 0)) == -1) {
         perror("socket");
@@ -28,7 +25,7 @@ void tcpserver_init(int *sockfd)
 
     bzero(&my_addr, sizeof(my_addr));
     my_addr.sin_family = PF_INET;
-    my_addr.sin_port = htons(myport);
+    my_addr.sin_port = htons(port);
     my_addr.sin_addr.s_addr = INADDR_ANY;
 
     if(bind(*sockfd, (struct sockaddr *)&my_addr, sizeof(struct sockaddr)) == -1) {
@@ -46,7 +43,7 @@ void tcpserver_init(int *sockfd)
     }
 }
 
-void tcp_accept(int sockfd,int *new_fd)
+void tcp_accept(int sockfd, int *new_fd)
 {
     struct sockaddr_in their_addr;
     socklen_t len = sizeof(struct sockaddr);
@@ -67,16 +64,11 @@ void tcp_accept(int sockfd,int *new_fd)
     }
 }
 
-struct sockaddr_in tcpclient_init(int *sockfd)
+struct sockaddr_in tcpclient_init(int *sockfd, char* ipaddr, int port)
 {
     int len;
     struct sockaddr_in dest;
-    char parainfo[3][20];
 
-    printf("input server IP:\n");
-    scanf("%s",parainfo[0]);
-    printf("input server port:\n");
-    scanf("%s",parainfo[1]);
     if((*sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         perror("Socket");
         exit(errno);
@@ -85,9 +77,9 @@ struct sockaddr_in tcpclient_init(int *sockfd)
 
     bzero(&dest, sizeof(dest));
     dest.sin_family = AF_INET;
-    dest.sin_port = htons(atoi(parainfo[1]));
-    if(inet_aton(parainfo[0], (struct in_addr *)&dest.sin_addr.s_addr) == 0) {
-        perror(parainfo[0]);
+    dest.sin_port = htons(port);
+    if(inet_aton(ipaddr, (struct in_addr *)&dest.sin_addr.s_addr) == 0) {
+        // perror(parainfo[0]);
         exit(errno);
     }
     printf("address created\n");

@@ -18,7 +18,7 @@
 
 #include "common.h"
 
-#define MAXSIZE 1024 //每次最大数据传输量
+
 
 void ShowCerts(SSL * ssl)
 {
@@ -42,16 +42,36 @@ void ShowCerts(SSL * ssl)
     return;
 }
 
-int main()
+int main(int argc, char** argv)
 {
-    char *hostname="127.0.0.1";
     int sockfd, len;
     char clientbuf[MAXSIZE];
-    struct hostent *host;//gethostbyname函数的参数返回
     struct sockaddr_in serv_addr;
     SSL_CTX *ctx;
     SSL *ssl;
-   
+    int res = -1, mode = 0, port = -1;
+    char hostname[32] = {0};
+
+    while((res = getopt(argc, argv, "?m:p:s:h")) != -1) {
+        switch(res) {
+        case 'm':
+            mode = atoi(optarg);
+            break;
+
+        case 'p':
+            port = atoi(optarg);
+            break;
+
+        case 's':
+            memcpy(hostname, optarg, strlen(optarg));
+            break;
+
+        case 'h':
+        default:
+            return -1;
+        }
+    }
+
     SSL_library_init();
     OpenSSL_add_all_algorithms();
     SSL_load_error_strings();
@@ -60,17 +80,15 @@ int main()
         ERR_print_errors_fp(stdout);
         exit(1);
     }
-    int chose=0;
-    printf("Please Chose Channel No.:\n");
-    printf("1.:SSL Protocol Channel\n");
-    printf("2.:TCP Protocol Channel\n");
-    scanf("%d",&chose);
 
-    serv_addr=tcpclient_init(&sockfd);
+    serv_addr = tcpclient_init(&sockfd, hostname, port);
 
-    if(chose==1) {
-        tcp_connect(sockfd, serv_addr);
-       
+    tcp_connect(sockfd, serv_addr);
+
+    bzero(clientbuf, MAXSIZE);
+    strcpy(clientbuf, "id:am3517&pw:am3517");
+
+    if(mode == 1) {
         ssl = SSL_new(ctx);
         SSL_set_fd(ssl, sockfd);
        
@@ -80,31 +98,20 @@ int main()
             printf("Connected with %s encryption\n", SSL_get_cipher(ssl));
             ShowCerts(ssl);
         }
-  
-        bzero(clientbuf, MAXSIZE);
-        strcpy(clientbuf, "id:am3517&pw:am3517");
+
         len = SSL_write(ssl, clientbuf, strlen(clientbuf));
-        if (len < 0) {
-            printf("消息'%s'发送失败！错误代码是%d，错误信息是'%s'\n",
-                    clientbuf, errno, strerror(errno));
-        } else {
-            printf("消息'%s'发送成功，共发送了%d个字节！\n",clientbuf, len);
-        }
 
         SSL_shutdown(ssl);
         SSL_free(ssl);
-    } else if(chose==2) {
-        tcp_connect(sockfd,serv_addr);
-       
-        bzero(clientbuf, MAXSIZE);
-        strcpy(clientbuf, "id:am3517&pw:am3517\n");
+    } else if(mode == 2) {
         len = send(sockfd, clientbuf, strlen(clientbuf),0);
-        if (len < 0) {
-            printf("消息'%s'发送失败！错误代码是%d，错误信息是'%s'\n",
-                    clientbuf, errno, strerror(errno));
-        } else {
-            printf("消息'%s'发送成功，共发送了%d个字节！\n",clientbuf, len);
-        }
+    }
+
+    if (len < 0) {
+        printf("消息'%s'发送失败！错误代码是%d，错误信息是'%s'\n",
+                clientbuf, errno, strerror(errno));
+    } else {
+        printf("消息'%s'发送成功，共发送了%d个字节！\n",clientbuf, len);
     }
 
     close(sockfd);
@@ -113,4 +120,3 @@ int main()
     return 0;
 }
 
-// g++ -o ssl_client ssl_client.cpp common.cpp -lssl -lcrypto

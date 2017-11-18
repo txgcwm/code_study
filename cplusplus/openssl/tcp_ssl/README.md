@@ -11,3 +11,13 @@ $ openssl req -newkey rsa:1204 -out sslserverreq.pem -keyout sslserverkey.pem
 $ openssl ca -in sslclientreq.pem -out sslclientcert.pem
 $ openssl ca -in sslserverreq.pem -out sslservercert.pem
 ```
+
+```
+$ g++ -o ssl_server ssl_server.cpp common.cpp -lssl -lcrypto
+$ g++ -o ssl_client ssl_client.cpp common.cpp -lssl -lcrypto
+```
+
+```
+$ ./ssl_server -m 1 -p 6666 -c ca/demoCA/cacert.pem -k ca/demoCA/private/cakey.pem
+$ ./ssl_client -m 1 -p 6666 -s 127.0.0.1
+```

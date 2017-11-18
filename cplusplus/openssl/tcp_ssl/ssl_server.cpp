@@ -17,91 +17,107 @@
 #include <openssl/err.h>  
 #include <openssl/ssl.h>
 
-#include "common.h"  
-  
-#define MAXSIZE 1024 //每次最大数据传输量  
-  
-#define PKEY_FILE "sslserverkey.pem"  
-#define CERT_FILE "sslservercert.pem"  
-  
+#include "common.h"
+
+
+// printf("1.:SSL Protocol Channel\n");  
+// printf("2.:TCP Protocol Channel\n");
+
 int main(int argc, char** argv)  
 {  
-    int sockfd,client_fd;  
+    int sockfd = -1, client_fd = -1;  
     socklen_t len;
-    SSL_CTX *ctx; 
-    char serverbuf[MAXSIZE];  
+    SSL_CTX *ctx = NULL; 
+    char serverbuf[MAXSIZE];
+    int res = 0;
+    int mode = 0, port = -1;
+    char cert[128] = {0};
+    char key[128] = {0};
+
+    while((res = getopt(argc, argv, "?m:p:c:k:h")) != -1) {
+        switch(res) {
+        case 'm':
+            mode = atoi(optarg);
+            break;
+
+        case 'p':
+            port = atoi(optarg);
+            break;
+
+        case 'c':
+            memcpy(cert, optarg, strlen(optarg));
+            break;
+
+        case 'k':
+            memcpy(key, optarg, strlen(optarg));
+            break;
+
+        case 'h':
+        default:
+            return -1;
+        }
+    }
   
     ERR_load_BIO_strings();  
     SSL_library_init();  
     OpenSSL_add_all_algorithms();  
-    SSL_load_error_strings();  
+    SSL_load_error_strings();
+
     ctx = SSL_CTX_new(SSLv23_server_method());  
-    if (ctx == NULL) {  
+    if(ctx == NULL) {  
         ERR_print_errors_fp(stdout);  
         exit(1);  
     }
 
-    if (!SSL_CTX_use_certificate_file(ctx, CERT_FILE, SSL_FILETYPE_PEM)) {  
+    if(!SSL_CTX_use_certificate_file(ctx, cert, SSL_FILETYPE_PEM)) {  
         ERR_print_errors_fp(stdout);  
         exit(1);  
     }
 
-    if (!SSL_CTX_use_PrivateKey_file(ctx, PKEY_FILE, SSL_FILETYPE_PEM)) {  
+    if(!SSL_CTX_use_PrivateKey_file(ctx, key, SSL_FILETYPE_PEM)) {  
         ERR_print_errors_fp(stdout);  
         exit(1);  
     }
 
-    if (!SSL_CTX_check_private_key(ctx)) {  
+    if(!SSL_CTX_check_private_key(ctx)) {  
         ERR_print_errors_fp(stdout);  
         exit(1);  
     }
+ 
+    signal(SIGPIPE, SIG_IGN);  
+    tcpserver_init(&sockfd, port);
 
-    int chose=0;  
-    signal(SIGPIPE,SIG_IGN);  
-    tcpserver_init(&sockfd);
+    while(1) {
+        tcp_accept(sockfd, &client_fd);
+        bzero(serverbuf, MAXSIZE);
 
-    while(1) {  
-        printf("Please Chose Channel No.:\n");  
-        printf("1.:SSL Protocol Channel\n");  
-        printf("2.:TCP Protocol Channel\n");  
-        scanf("%d",&chose);  
-
-        if(chose==1) {  
-            SSL *ssl;  
-            tcp_accept(sockfd,&client_fd);  
-            ssl = SSL_new(ctx);  
+        if(mode == 1) {  
+            SSL *ssl = SSL_new(ctx);  
             SSL_set_fd(ssl, client_fd);  
-            if (SSL_accept(ssl) == -1) {  
+            if(SSL_accept(ssl) == -1) {  
                 perror("accept");  
                 close(client_fd);  
                 break;  
             }  
- 
-            bzero(serverbuf, MAXSIZE);  
              
-            len = SSL_read(ssl,serverbuf, MAXSIZE);  
-            if (len > 0) {
-                printf("接收消息成功:'%s'，共%d个字节的数据\n",serverbuf, len);  
-            } else {
-                printf("消息接收失败！错误代码是%d，错误信息是'%s'\n",errno, strerror(errno));  
-            }
+            len = SSL_read(ssl, serverbuf, MAXSIZE);
              
             SSL_shutdown(ssl);  
-            SSL_free(ssl);  
-            close(client_fd);  
-        } else if(chose==2) {  
-            tcp_accept(sockfd,&client_fd);  
-            len = recv(client_fd,serverbuf, MAXSIZE, 0);  
+            SSL_free(ssl); 
+        } else if(mode == 2) { 
+            len = recv(client_fd, serverbuf, MAXSIZE, 0);        
+        }
+
+        if(client_fd > 0) {
             if (len > 0) {
                 printf("接收消息成功:'%s'，共%d个字节的数据\n", serverbuf, len);  
             } else {
-                printf("消息接收失败！错误代码是%d，错误信息是'%s'\n",errno, strerror(errno));
+                printf("消息接收失败！错误代码是%d，错误信息是'%s'\n", errno, strerror(errno));
             }
 
-            close(client_fd);  
+            close(client_fd);
+            client_fd = -1;
         }
-
-        chose=0;  
     }
 
     close(sockfd);  
@@ -110,5 +126,3 @@ int main(int argc, char** argv)
     return 0;  
 }
 
-
-// g++ -o ssl_server ssl_server.cpp common.cpp -lssl -lcrypto
