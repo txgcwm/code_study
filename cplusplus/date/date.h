@@ -51,7 +51,6 @@ namespace Date {
 
 	void inDate(date &);		///年月日输入　时刻默认为八点正
 	date *now();				//系统当前日期
-
 }
 
 #endif
