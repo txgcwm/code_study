@@ -20,10 +20,10 @@
 
 
 
-void ShowCerts(SSL * ssl)
+void ShowCerts(SSL* ssl)
 {
-    X509 *cert;
-    char *line;
+    X509 *cert = NULL;
+    char *line = NULL;
 
     cert = SSL_get_peer_certificate(ssl);
     if(cert != NULL) {
@@ -31,12 +31,19 @@ void ShowCerts(SSL * ssl)
         line = X509_NAME_oneline(X509_get_subject_name(cert), 0, 0);
         printf("证书: %s\n", line);
         free(line);
+        line = NULL;
+
         line = X509_NAME_oneline(X509_get_issuer_name(cert), 0, 0);
         printf("颁发者: %s\n", line);
         free(line);
-        X509_free(cert);
+        line = NULL;
     } else {
         printf("无证书信息！\n");
+    }
+
+    if(cert != NULL) {
+        X509_free(cert);
+        cert = NULL;
     }
 
     return;
@@ -91,8 +98,9 @@ int main(int argc, char** argv)
     if(mode == 1) {
         ssl = SSL_new(ctx);
         SSL_set_fd(ssl, sockfd);
-       
-        if (SSL_connect(ssl) == -1) {
+
+        int ret = SSL_connect(ssl);
+        if(ret == -1) {
             ERR_print_errors_fp(stderr);
         } else {
             printf("Connected with %s encryption\n", SSL_get_cipher(ssl));

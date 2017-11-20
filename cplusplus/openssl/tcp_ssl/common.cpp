@@ -56,12 +56,13 @@ void tcp_accept(int sockfd, int *new_fd)
                 inet_ntoa(their_addr.sin_addr), ntohs(their_addr.sin_port), *new_fd);
     }
     
-    int flags;
-    flags = fcntl (sockfd, F_GETFL); 
+    int flags = fcntl(sockfd, F_GETFL); 
     if(flags & O_NONBLOCK) {
         //fcntl (sockfd, F_SETFL, flags-O_NONBLOCK);
-        fcntl(sockfd,F_SETFL,flags&(~O_NONBLOCK));
+        fcntl(sockfd, F_SETFL, flags&(~O_NONBLOCK));
     }
+
+    return;
 }
 
 struct sockaddr_in tcpclient_init(int *sockfd, char* ipaddr, int port)

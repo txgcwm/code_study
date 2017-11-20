@@ -93,8 +93,10 @@ int main(int argc, char** argv)
 
         if(mode == 1) {  
             SSL *ssl = SSL_new(ctx);  
-            SSL_set_fd(ssl, client_fd);  
-            if(SSL_accept(ssl) == -1) {  
+            SSL_set_fd(ssl, client_fd);
+
+            int ret = SSL_accept(ssl);
+            if(ret == -1) {
                 perror("accept");  
                 close(client_fd);  
                 break;  
