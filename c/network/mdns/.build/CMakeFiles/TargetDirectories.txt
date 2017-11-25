@@ -1,4 +1,0 @@
-/srv/code_study/c/network/mdns/.build/CMakeFiles/rebuild_cache.dir
-/srv/code_study/c/network/mdns/.build/CMakeFiles/edit_cache.dir
-/srv/code_study/c/network/mdns/.build/CMakeFiles/viewer.dir
-/srv/code_study/c/network/mdns/.build/CMakeFiles/querier.dir
