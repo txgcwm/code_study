@@ -1,0 +1,1 @@
+/usr/bin/cc     CMakeFiles/viewer.dir/src/viewer.c.o  -o ../bin/viewer -rdynamic 

@@ -1,0 +1,1 @@
+/usr/bin/cc     CMakeFiles/querier.dir/src/querier.c.o  -o ../bin/querier -rdynamic 
