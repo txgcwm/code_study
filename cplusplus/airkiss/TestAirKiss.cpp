@@ -8,7 +8,7 @@ int main(int argc, char **argv)
 {
 	Slink::CAirKiss airKiss;
 
-	airKiss.SetRouteInfo("21d12", "12345678");
+	airKiss.SetRouteInfo("", "");
 
 	while(1) {
 		sleep(10);

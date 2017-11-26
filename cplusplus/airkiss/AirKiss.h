@@ -28,8 +28,8 @@ private:
 	void Sequence(int index, char *data, int len);
 
 private:
-	int *m_encodedData;
-	int m_length;
+	int*	m_encodedData;
+	int 	m_length;
 };
 
 }  // end namespace

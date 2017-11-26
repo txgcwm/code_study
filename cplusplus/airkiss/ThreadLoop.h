@@ -23,13 +23,11 @@ private:
 	static void *ThreadProc(void *argv);
 	
 private:
-	std::string				m_name;
-	pthread_t 				m_tid;
-
-    pthread_mutex_t 		m_lock;
-	pthread_cond_t 			m_condition;
-
-    bool					m_start;
+	bool			m_start;
+	std::string		m_name;
+	pthread_t 		m_tid;
+	pthread_cond_t 	m_cond;
+	pthread_mutex_t	m_lock;
 };
 
 } // end namespace

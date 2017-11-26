@@ -3,24 +3,20 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
 #include <unistd.h>
 #include <stdio.h>
-#include <time.h>
 
 #include "AirKiss.h"
-
-using namespace std;
 
 
 
 namespace Slink {
 
-inline int crc8(const char *data, int len)
+static inline unsigned char crc8(const unsigned char *data, int len)
 {
     int i = 0;
-    char crc = 0x00;
+    unsigned char crc = 0x00;
 
     while(len-- > 0) {
         char extract = data[i++];
@@ -41,7 +37,7 @@ inline int crc8(const char *data, int len)
     return (crc & 0xFF);
 }
 
-inline void generateRandom(char *buf, int len)
+static inline void generate_random_data(char *buf, int len)
 {
     bzero(buf, len);
 
@@ -56,10 +52,34 @@ inline void generateRandom(char *buf, int len)
     return;
 }
 
+static inline char get_random()
+{
+    srand((int)time(NULL));
+    char random = 1 + (int)((float)127 * rand()/(RAND_MAX + 1.0));
+    printf("random: %d\n", random);
+
+    return random;
+}
+
+template<typename T>
+static inline void print_data(const char* msg, T data, int len)
+{
+    printf("%s: ", msg);
+
+    for(int i = 0; i < len; ++i) {
+        printf("%d ", data[i]);
+    }
+    printf("\n");
+
+    return;
+}
+
 /**************************************************************************************************/
 
 CAirKiss::CAirKiss()
 : CThreadLoop("AirKiss")
+, m_encodedData(NULL)
+, m_length(0)
 {
 }
 
@@ -68,19 +88,19 @@ CAirKiss::~CAirKiss()
 	Reset();
 }
 
-bool CAirKiss::SetRouteInfo(string ssid, string password)
+bool CAirKiss::SetRouteInfo(std::string ssid, std::string password)
 {
 	m_encodedData = new int[2 << 14];
 	m_length = 0;
 
-	char random = 1 + (int)(127 * rand()/(RAND_MAX + 1.0));
+	char random = get_random();
 
-	// LeadingPart();
+	LeadingPart();
 	MagicCode(ssid, password);
 
-    for (int i = 0; i < 1; ++i) {
-        int index;
-        string data = password + random + ssid;
+    for (int i = 0; i < 8; ++i) {
+        int index = 0;
+        std::string data = password + random + ssid;
         
         PrefixCode(password);
 
@@ -94,11 +114,7 @@ bool CAirKiss::SetRouteInfo(string ssid, string password)
         }
     }
 
-	for(int i = 0; i < m_length; i++) {
-		printf("%d ", m_encodedData[i]);
-	}
-
-    printf("\n");
+    print_data("data", m_encodedData, m_length);
 
 	return StartThread();
 }
@@ -118,6 +134,8 @@ bool CAirKiss::Reset()
 void CAirKiss::AppendEncodedData(int length)
 {
     m_encodedData[m_length++] = length;
+
+    return;
 }
 
 void CAirKiss::LeadingPart()
@@ -131,7 +149,7 @@ void CAirKiss::LeadingPart()
     return;
 }
 
-void CAirKiss::MagicCode(string ssid, string password)
+void CAirKiss::MagicCode(std::string ssid, std::string password)
 {
     int length = ssid.size() + password.size() + 1;
     int magicCode[4] = {0};
@@ -143,11 +161,11 @@ void CAirKiss::MagicCode(string ssid, string password)
 
     magicCode[1] = 0x10 | (length & 0xF);
 
-    int crc = crc8(ssid.data(), ssid.size());
+    unsigned char crc = crc8((const unsigned char *)ssid.data(), ssid.size());
     magicCode[2] = 0x20 | (crc >> 4 & 0xF);
     magicCode[3] = 0x30 | (crc & 0xF);
 
-    for (int i = 0; i < 1; ++i) {
+    for (int i = 0; i < 20; ++i) {
         for (int j = 0; j < 4; ++j) {
             AppendEncodedData(magicCode[j]);
         }
@@ -156,20 +174,20 @@ void CAirKiss::MagicCode(string ssid, string password)
     return;
 }
 
-void CAirKiss::PrefixCode(string password)
+void CAirKiss::PrefixCode(std::string password)
 {
-    int length = password.size();
+    unsigned char length = password.size();
     int prefixCode[4] = {0};
 
     prefixCode[0] = 0x40 | (length >> 4 & 0xF);
     prefixCode[1] = 0x50 | (length & 0xF);
 
-    int crc = crc8(password.data(), password.size());
+    unsigned char crc = crc8((const unsigned char *)&length, 1);
     prefixCode[2] = 0x60 | (crc >> 4 & 0xF);
     prefixCode[3] = 0x70 | (crc & 0xF);
 
-    for (int j = 0; j < 4; ++j) {
-        AppendEncodedData(prefixCode[j]);
+    for (int i = 0; i < 4; ++i) {
+        AppendEncodedData(prefixCode[i]);
     }
 
     return;
@@ -177,12 +195,12 @@ void CAirKiss::PrefixCode(string password)
 
 void CAirKiss::Sequence(int index, char *data, int len)
 {
-    char content[5] = {0};
+    unsigned char content[5] = {0};
 
     content[0] = (char)(index & 0xFF);
     memcpy(&content[1], data, len);
 
-    int crc = crc8(content, len + 1);
+    unsigned char crc = crc8((const unsigned char *)content, len + 1);
 
     AppendEncodedData(0x80 | crc);
     AppendEncodedData(0x80 | index);
@@ -196,10 +214,9 @@ void CAirKiss::Sequence(int index, char *data, int len)
 
 void CAirKiss::EventHandleLoop()
 {
-	int sockfd;
-	socklen_t addr_len;
-	char buf[64];
+	int sockfd = -1;
 	struct sockaddr_in server_addr;
+    socklen_t addr_len = sizeof(server_addr);
 
 	if((sockfd = socket(PF_INET, SOCK_DGRAM, 0)) < 0) {
 		perror("socket");
@@ -208,30 +225,36 @@ void CAirKiss::EventHandleLoop()
 
 	memset(&server_addr, 0, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(9080);
+#if 1
+    int broadcast = 1;
+    setsockopt(sockfd, SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof(broadcast));
+    server_addr.sin_addr.s_addr = inet_addr("255.255.255.255");
+#else
 	server_addr.sin_addr.s_addr = inet_addr("224.0.0.251");
-	server_addr.sin_port = htons(9080);
-	addr_len = sizeof(server_addr);
+#endif
 
 	while(1) {
 		for(int i = 0; i < m_length; i++) {
 			char buf[1500] = {0};
 			int len = m_encodedData[i];
 
-			generateRandom(buf, len + 1);
+			generate_random_data(buf, len + 1);
 
 			if(sendto(sockfd, buf, len, 0, (struct sockaddr*)&server_addr, addr_len) < 0) {
-				perror("sendrto");
+				perror("send to");
 			}
 
-            WaitForSleep(200);
+            WaitForSleep(5);
 		}
 
-		if(WaitForSleep(100) != 0) {
+		if(WaitForSleep(10) != 0) {
 			break;
 		}
 	}
 
 	close(sockfd);
+    sockfd = -1;
 
 	return;
 }
@@ -239,3 +262,5 @@ void CAirKiss::EventHandleLoop()
 }  // end namespace
 
 
+// http://yk8900.blog.163.com/blog/static/12318354420166261432939/
+// https://github.com/pannzh/Airkiss

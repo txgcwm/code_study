@@ -5,7 +5,6 @@
 	#include <sys/prctl.h>
 #endif
 
-// #include "Log.h"
 #include "ThreadLoop.h"
 
 
@@ -13,8 +12,8 @@
 namespace Slink {
 
 CThreadLoop::CThreadLoop(std::string name)
-: m_name(name)
-, m_start(false)
+: m_start(false)
+, m_name(name)
 {
 }
 
@@ -28,12 +27,11 @@ bool CThreadLoop::StartThread()
 	int res = false;
 
 	if(m_start) {
-		// INFO("thread(%s) has started!\n", m_name.c_str());
 		return true;
 	}
 
 	pthread_mutex_init(&m_lock, NULL);
-	pthread_cond_init(&m_condition, NULL);
+	pthread_cond_init(&m_cond, NULL);
 
 	pthread_attr_t attr;
 
@@ -42,11 +40,9 @@ bool CThreadLoop::StartThread()
     pthread_attr_setstacksize(&attr, 1024 * 1024);
 
     if(pthread_create(&m_tid, &attr, ThreadProc, this) == -1) {  
- 		// ERROR("can not create thread\n");
  		res = false;
     } else {
     	m_start = true;
-    	// INFO("start thread(%s) success!\n", m_name.c_str());
     }
 
     pthread_attr_destroy(&attr);
@@ -57,20 +53,17 @@ bool CThreadLoop::StartThread()
 bool CThreadLoop::StopThread()
 {
 	if(!m_start) {
-		// INFO("thread(%s) has stopped!\n", m_name.c_str());
 		return true;
 	}
 
-	pthread_cond_broadcast(&m_condition);
+	pthread_cond_broadcast(&m_cond);
 
 	pthread_join(m_tid, NULL);
 
     pthread_mutex_destroy(&m_lock);
-    pthread_cond_destroy(&m_condition);
+    pthread_cond_destroy(&m_cond);
 
     m_start = false;
-
-    // INFO("stop thread(%s) success!\n", m_name.c_str());
 
 	return true;
 }
@@ -112,7 +105,7 @@ int CThreadLoop::WaitForSleep(int timeout_ms)
 	abstime.tv_nsec = nsec % 1000000000;
 	abstime.tv_sec = now.tv_sec + nsec / 1000000000 + timeout_ms / 1000;
 
-	int err = pthread_cond_timedwait(&m_condition, &m_lock, &abstime);
+	int err = pthread_cond_timedwait(&m_cond, &m_lock, &abstime);
 	if(err == ETIMEDOUT) {
 		ret = 0;
 	}
