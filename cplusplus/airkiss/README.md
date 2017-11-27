@@ -1,8 +1,6 @@
 # Airkiss
 
 
-## About 
-
 [Airkiss][airkiss]是微信提出的一种无线应用层协议,主要用于给无法交互的硬件设备进行网络配置,
 如(智能)插座,灯泡,飞机杯等. 其原理是将硬件设备的网卡置于监听模式(monitor mode),
 又称为混杂模式(promiscuous mode), 从而获取周围的802.11无线数据帧, 俗称抓包. 
@@ -14,6 +12,7 @@
 
 - [Airkss技术实现方案][airkiss_doc]
 - [How does TI CC3000 wifi smart config work?][smartcfg_doc]
+
 
 ## Build
 
@@ -28,6 +27,7 @@ $ sudo apt-get install libiw-dev
 $ make clean
 $ make
 ```
+
 
 ## Run
 
@@ -64,10 +64,10 @@ airkiss上层在抓包之前先扫描附近的无线热点并记录其ssid/crc�
 
 ## Known issue
 
-[akdbg]: http://iot.weixin.qq.com/wiki/doc/wifi/AirKissDebugger.apk
-[airkiss]:http://iot.weixin.qq.com/wiki/doc/wifi/AirKissDoc.pdf
-[smartcfg]:http://processors.wiki.ti.com/index.php/CC3000_Smart_Config
-[airkiss_doc]:http://wenku.baidu.com/view/0e825981ad02de80d5d8409c
-[airkiss_doc2]:https://www.docdroid.net/UIi8rgt/airkiss-protocol.pdf.html
-[smartcfg_doc]:http://electronics.stackexchange.com/questions/61704/how-does-ti-cc3000-wifi-smart-config-work
-[80211]:http://www.itcertnotes.com/2011/05/ieee-80211-frame-types.html
+[akdbg](http://iot.weixin.qq.com/wiki/doc/wifi/AirKissDebugger.apk) 
+[airkiss](http://iot.weixin.qq.com/wiki/doc/wifi/AirKissDoc.pdf)  
+[smartcfg](http://processors.wiki.ti.com/index.php/CC3000_Smart_Config)  
+[airkiss_doc](http://wenku.baidu.com/view/0e825981ad02de80d5d8409c)  
+[airkiss_doc2](https://www.docdroid.net/UIi8rgt/airkiss-protocol.pdf.html)  
+[smartcfg_doc](http://electronics.stackexchange.com/questions/61704/how-does-ti-cc3000-wifi-smart-config-work)  
+[80211](http://www.itcertnotes.com/2011/05/ieee-80211-frame-types.html)  
