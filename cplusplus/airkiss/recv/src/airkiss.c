@@ -1,14 +1,15 @@
-#include "airkiss.h"
-#include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 
-#define PASSWORD_MAX_LEN    32
-#define ESSID_MAX_LEN        32
+#include "airkiss.h"
 
-#define USR_DATA_BUFF_MAX_SIZE    (PASSWORD_MAX_LEN + 1 + ESSID_MAX_LEN)
-typedef enum
-{
+
+#define PASSWORD_MAX_LEN        32
+#define ESSID_MAX_LEN           32
+#define USR_DATA_BUFF_MAX_SIZE  (PASSWORD_MAX_LEN + 1 + ESSID_MAX_LEN)
+
+typedef enum {
     AIRKISS_STATE_STOPED = 0,
     AIRKISS_STATE_IDLE,
     AIRKISS_STATE_SRC_LOCKED,
@@ -18,38 +19,33 @@ typedef enum
 } AIR_KISS_STATE;
 
 #define MAX_GUIDE_RECORD    4
-typedef struct
-{
+typedef struct {
     unsigned short  length_record[MAX_GUIDE_RECORD + 1];
-}guide_code_record;
+} guide_code_record;
 
 #define MAX_MAGIC_CODE_RECORD    4
-typedef struct
-{
+typedef struct {
     unsigned short record[MAX_MAGIC_CODE_RECORD + 1];
-}magic_code_record;
+} magic_code_record;
 
 #define MAX_PREFIX_CODE_RECORD    4
-typedef struct
-{
+typedef struct {
     unsigned short record[MAX_PREFIX_CODE_RECORD + 1];
-}prfix_code_record;
+} prfix_code_record;
 
 #define MAX_SEQ_CODE_RECORD    6
-typedef struct
-{
+typedef struct {
     unsigned short record[MAX_SEQ_CODE_RECORD + 1];
 }seq_code_record;
 
 union airkiss_data{
-        guide_code_record guide_code;
-        magic_code_record magic_code;
-        prfix_code_record prefix_code;
-        seq_code_record  seq_code;
+    guide_code_record guide_code;
+    magic_code_record magic_code;
+    prfix_code_record prefix_code;
+    seq_code_record  seq_code;
 };
 
-typedef struct
-{
+typedef struct {
     char* pwd;                        
     char* ssid;
     unsigned char pswd_len;
@@ -69,7 +65,7 @@ typedef struct
     unsigned short seq_success_map;
     unsigned short seq_success_map_cmp;
     union airkiss_data data;
-}_airkiss_local_context;
+} _airkiss_local_context;
 
 const char airkiss_vers[] = "V1.3";
 
@@ -80,34 +76,32 @@ static _airkiss_local_context _akcontext;
 //crc8
 unsigned char calcrc_1byte(unsigned char abyte)    
 {    
-    unsigned char i,crc_1byte;     
-    crc_1byte=0;                
-    for(i = 0; i < 8; i++)    
-    {    
-        if(((crc_1byte^abyte)&0x01))    
-        {    
+    unsigned char i, crc_1byte = 0;     
+               
+    for(i = 0; i < 8; i++) {    
+        if(((crc_1byte^abyte)&0x01)) {    
 
             crc_1byte^=0x18;     
             crc_1byte>>=1;    
             crc_1byte|=0x80;    
-        }          
-        else    
-        {
+        } else {
             crc_1byte>>=1; 
         }
+
         abyte>>=1;          
-    }   
+    }
+
     return crc_1byte;   
 }  
 
-
 unsigned char calcrc_bytes(unsigned char *p,unsigned int num_of_bytes)  
 {  
-    unsigned char crc=0;  
-    while(num_of_bytes--) 
-    {  
+    unsigned char crc=0;
+
+    while(num_of_bytes--) {  
         crc=calcrc_1byte(crc^*p++);  
-    }  
+    }
+
     return crc;   
 } 
 
@@ -128,8 +122,7 @@ int airkiss_filter(const unsigned char *frame, int size)
 
     int i;
     unsigned char ch;
-    for(i=0; i<24; i++)
-    {
+    for(i=0; i<24; i++) {
         ch = *((unsigned char*)frame + i);
         akcontex->dummy[i] = ch;
     }
@@ -137,10 +130,12 @@ int airkiss_filter(const unsigned char *frame, int size)
     for(i=4; i<10; i++)
         if(akcontex->dummy[i]!=akcontex->dummyap[i])
             goto invalid;
+
     //Address 2
     for(i=10; i<16; i++)
         if(akcontex->dummy[i]!=akcontex->dummyap[i])
             goto invalid;
+
     //Address 3
     for(i=16; i<22; i++)
         if(akcontex->dummy[i]!=akcontex->dummyap[i])
@@ -149,6 +144,7 @@ int airkiss_filter(const unsigned char *frame, int size)
     isvalid = 1;
 
 invalid:
+
     return isvalid;
 }
 
@@ -158,11 +154,13 @@ invalid:
 int airkiss_discover_filter(const unsigned char *frame, int size)
 {
     int isvalid = 0;
+
     // before discover
     if(size < 50)
         goto invalid;
 
     isvalid = 1;
+
 invalid:
     return isvalid;
 }
@@ -172,25 +170,23 @@ static void airkiss_record_move_ones(void *base_addr, int record_num)
     int i; 
     unsigned short *record_base = base_addr;
 
-    for(i = 0; i < record_num; i++)
-    {
+    for(i = 0; i < record_num; i++) {
         record_base[i] = record_base[i+1];
     }
 }
 
 static void airkiss_add_seq_data(const unsigned char *data, int seq)
 {
-    if(seq < _akcontext.need_seq)
-    {
-        if((seq*4 + 4) <= USR_DATA_BUFF_MAX_SIZE)
-        {
-            if((_akcontext.seq_success_map & (1 << seq)) == 0) 
-            {
+    if(seq < _akcontext.need_seq) {
+        if((seq*4 + 4) <= USR_DATA_BUFF_MAX_SIZE) {
+            if((_akcontext.seq_success_map & (1 << seq)) == 0) {
                 akconf->memcpy(_akcontext.usr_data + seq*4, data, 4);
                 _akcontext.seq_success_map |= (1 << seq);
             }
         }
     }
+
+    return;
 }
 
 int airkiss_init(airkiss_context_t* context, 
@@ -206,6 +202,7 @@ int airkiss_init(airkiss_context_t* context,
     _akcontext.airkiss_state = AIRKISS_STATE_IDLE;
 
     akconf->printf("airkiss_local_context size:%ld\n", sizeof(_airkiss_local_context));
+
     return 0;
 }
 
@@ -231,8 +228,7 @@ static void airkiss_recv_discover(const void* frame, unsigned short length)
         success = 1;
     }
     
-    if(success)
-    {
+    if(success) {
         _akcontext.airkiss_state = AIRKISS_STATE_SRC_LOCKED;
         resest_airkiss_data();
         akconf->printf("airkiss_recv_discover success\n");
@@ -240,15 +236,15 @@ static void airkiss_recv_discover(const void* frame, unsigned short length)
 
         int i;
         unsigned char ch;
-        for(i=0; i<24; i++)
-        {
+        for(i=0; i<24; i++) {
             ch = *((unsigned char*)frame + i);
             akcontex->dummyap[i] = ch;
             //akconf->printf("0x%02x ", akcontex->dummyap[i]);
         }
     }
-}
 
+    return;
+}
 
 static void airkiss_process_magic_code(unsigned short length)
 {
@@ -273,7 +269,6 @@ static void airkiss_process_magic_code(unsigned short length)
 
 static void airkiss_process_prefix_code(unsigned short length)
 {
-    
     _akcontext.data.prefix_code.record[MAX_PREFIX_CODE_RECORD] = length - _akcontext.base_len;
 
     airkiss_record_move_ones(_akcontext.data.prefix_code.record, MAX_PREFIX_CODE_RECORD );
@@ -311,7 +306,6 @@ static void airkiss_process_prefix_code(unsigned short length)
 
 static void airkiss_process_sequence(unsigned short length)
 {
-    
     _akcontext.data.seq_code.record[MAX_SEQ_CODE_RECORD] = length - _akcontext.base_len;
 
     airkiss_record_move_ones(_akcontext.data.seq_code.record, MAX_SEQ_CODE_RECORD);
@@ -369,17 +363,14 @@ static void airkiss_process_sequence(unsigned short length)
     }
 }
 
-
 int airkiss_recv(airkiss_context_t* context, 
                             const void* frame, unsigned short length)
 {
-
     if(_akcontext.airkiss_state != AIRKISS_STATE_IDLE)
         if(!airkiss_filter(frame, length))
             return AIRKISS_STATUS_CONTINUE;
 
-    switch(_akcontext.airkiss_state)
-    {
+    switch(_akcontext.airkiss_state) {
         case AIRKISS_STATE_IDLE:
             if(airkiss_discover_filter(frame, length)) {
                 airkiss_recv_discover(frame, length);
@@ -387,24 +378,28 @@ int airkiss_recv(airkiss_context_t* context,
                     return AIRKISS_STATUS_CHANNEL_LOCKED;
             }
             break;
+
         case AIRKISS_STATE_SRC_LOCKED:
             airkiss_process_magic_code(length);
             break;
+
         case AIRKISS_STATE_MAGIC_CODE_COMPLETE:
             airkiss_process_prefix_code(length);
-            break;    
+            break;
+
         case AIRKISS_STATE_PREFIX_CODE_COMPLETE:
             airkiss_process_sequence(length);
             if(_akcontext.airkiss_state == AIRKISS_STATE_COMPLETE)
                 return AIRKISS_STATUS_COMPLETE;
-            break;        
+            break;  
+
         default:
             _akcontext.airkiss_state = AIRKISS_STATE_IDLE;
             break;
     }
+
     return AIRKISS_STATUS_CONTINUE;
 }
-
 
 int airkiss_get_result(airkiss_context_t* context, 
                             airkiss_result_t* result)
@@ -414,9 +409,11 @@ int airkiss_get_result(airkiss_context_t* context,
 
     return 0;
 }
+
 int airkiss_change_channel(airkiss_context_t* context)
 {
     memset(context, 0, sizeof(airkiss_context_t));
     resest_airkiss_data();
+    
     return 0;
 }

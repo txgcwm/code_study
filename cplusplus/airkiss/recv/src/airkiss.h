@@ -19,18 +19,14 @@ typedef int (*airkiss_memcmp_fn) (const void* ptr1, const void* ptr2, unsigned i
 typedef int (*airkiss_printf_fn) (const char* format, ...);
 
 
-typedef struct
-{
-
+typedef struct {
     airkiss_memset_fn memset;
     airkiss_memcpy_fn memcpy;
     airkiss_memcmp_fn memcmp;
     airkiss_printf_fn printf;
-
 } airkiss_config_t;
 
-typedef struct
-{
+typedef struct {
     int dummyap[26];
     int dummy[32];
 } airkiss_context_t;
@@ -38,8 +34,7 @@ typedef struct
 /*
  * AirKiss解码成功后的结果
  */
-typedef struct
-{
+typedef struct {
     char* pwd;                        /* wifi密码，以'\0'结尾 */
     char* ssid;                        /* wifi ssid，以'\0'结尾 */
     unsigned char pwd_length;        /* wifi密码长度 */
@@ -52,8 +47,7 @@ typedef struct
 /*
  * airkiss_recv()正常情况下的返回值
  */
-typedef enum
-{
+typedef enum {
     /* 解码正常，无需特殊处理，继续调用airkiss_recv()直到解码成功 */
     AIRKISS_STATUS_CONTINUE = 0,
 
@@ -62,7 +56,6 @@ typedef enum
 
     /* 解码成功，可以调用airkiss_get_result()取得结果 */
     AIRKISS_STATUS_COMPLETE = 2
-
 } airkiss_status_t;
 
 

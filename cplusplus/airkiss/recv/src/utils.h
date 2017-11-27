@@ -8,7 +8,8 @@
 #endif
 
 #include <stdio.h>
-#define RECV_BUFSIZE 1024
+
+
 #define LOG_ERROR(format, ...) fprintf(stderr, format"\n", ##__VA_ARGS__)
 #define LOG_TRACE(format, args...) fprintf(stdout, format"\n", ##args)
 
