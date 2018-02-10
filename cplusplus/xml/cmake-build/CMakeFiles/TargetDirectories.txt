@@ -1,0 +1,8 @@
+/srv/code_study/cplusplus/xml/cmake-build/CMakeFiles/rebuild_cache.dir
+/srv/code_study/cplusplus/xml/cmake-build/CMakeFiles/edit_cache.dir
+/srv/code_study/cplusplus/xml/cmake-build/build/tinyxml/CMakeFiles/rebuild_cache.dir
+/srv/code_study/cplusplus/xml/cmake-build/build/tinyxml/CMakeFiles/edit_cache.dir
+/srv/code_study/cplusplus/xml/cmake-build/build/tinyxml/CMakeFiles/tinyxml.dir
+/srv/code_study/cplusplus/xml/cmake-build/build/test/CMakeFiles/rebuild_cache.dir
+/srv/code_study/cplusplus/xml/cmake-build/build/test/CMakeFiles/edit_cache.dir
+/srv/code_study/cplusplus/xml/cmake-build/build/test/CMakeFiles/test.dir

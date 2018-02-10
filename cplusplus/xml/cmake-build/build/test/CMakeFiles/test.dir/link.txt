@@ -1,0 +1,1 @@
+/usr/bin/c++      CMakeFiles/test.dir/test.cpp.o  -o ../../out/test/test -rdynamic ../tinyxml/libtinyxml.a 
