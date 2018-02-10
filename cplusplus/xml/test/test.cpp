@@ -97,6 +97,7 @@ int read_school_xml(const char* xmlFile)
 	return 0; 
 }
 
+// http://www.cnblogs.com/ggjucheng/archive/2012/01/03/2311426.html
 int main(int argc, char *argv[])
 {
 	int res = -1;
