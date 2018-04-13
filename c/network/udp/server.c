@@ -48,7 +48,8 @@ int main(int argc, char** argv)
 
 		write(fd, buff, ret);
 
-		printf("%s\n", buff);
+		printf("get data len: %d\n", ret);
+		//printf("%s\n", buff);
     }
 
 	free(buff);
