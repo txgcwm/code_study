@@ -7,13 +7,13 @@
 
 
 
-typedef struct _wav_riff_t{
+typedef struct _wav_riff_t {
     char id[5];               //ID:"RIFF"
     int  size;                //file_len - 8
     char type[5];             //type:"WAVE"
-}wav_riff_t;
+} wav_riff_t;
 
-typedef struct _wav_format_t{
+typedef struct _wav_format_t {
     char  id[5];              //ID:"fmt"
     int   size;
     short compression_code;
@@ -22,19 +22,19 @@ typedef struct _wav_format_t{
     int   avg_bytes_per_sec;
     short block_align;
     short bits_per_sample;
-}wav_format_t;
+} wav_format_t;
 
-typedef struct _wav_fact_t{
+typedef struct _wav_fact_t {
     char id[5];
     int  size;
-}wav_fact_t;
+} wav_fact_t;
 
-typedef struct _wav_data_t{
+typedef struct _wav_data_t {
     char id[5];
     int  size;
-}wav_data_t;
+} wav_data_t;
 
-typedef struct _wav_t{
+typedef struct _wav_t {
     FILE         *fp;
     wav_riff_t   riff;
     wav_format_t format;
@@ -43,7 +43,7 @@ typedef struct _wav_t{
     int          file_size;
     int          data_offset;
     int          data_size;
-}wav_t;
+} wav_t;
 
 wav_t *wav_open(char *file_name);
 

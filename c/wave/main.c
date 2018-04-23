@@ -31,7 +31,7 @@ void usage(char *app_name)
 
 void parse_wave_file(char *infile)
 {
-	wav_t *wav = NULL;
+    wav_t *wav = NULL;
 
     if(infile == NULL || strlen(infile) <= 0) {
         printf("\terror\n");
@@ -39,12 +39,12 @@ void parse_wave_file(char *infile)
     }
 
     wav = wav_open(infile);
-    if(NULL != wav){
+    if(NULL != wav) {
         wav_dump(wav);
         wav_close(&wav);
     }
 
-	return;
+    return;
 }
 
 void copy_file(int from_fd, int to_fd)
@@ -54,15 +54,15 @@ void copy_file(int from_fd, int to_fd)
     char *ptr = NULL;
 
     while ((bytes_read = read(from_fd, buffer, BUFFER_SIZE)) > 0) {
-        if ((bytes_read == -1) && (errno != EINTR)) 
+        if ((bytes_read == -1) && (errno != EINTR))
             break;
         else if (bytes_read > 0) {
             ptr = buffer;
             while ((bytes_write = write(to_fd, ptr, bytes_read)) > 0) {
-               
+
                 if ((bytes_write == -1) && (errno != EINTR))
                     break;
-                else if (bytes_write == bytes_read) 
+                else if (bytes_write == bytes_read)
                     break;
                 else if (bytes_write > 0) {
                     ptr += bytes_write;
@@ -80,11 +80,11 @@ void copy_file(int from_fd, int to_fd)
 
 void add_wave_header(char *infile, char *outfile, short formatTag, int sampleRate, short bitPerSample)
 {
-	struct stat buf;
-	int from_fd, to_fd;
-	void *header = NULL;
+    struct stat buf;
+    int from_fd, to_fd;
+    void *header = NULL;
 
-	if(infile == NULL || strlen(infile) <= 0 || outfile == NULL || strlen(outfile) <= 0) {
+    if(infile == NULL || strlen(infile) <= 0 || outfile == NULL || strlen(outfile) <= 0) {
         printf("error\n");
         return;
     }
@@ -94,8 +94,8 @@ void add_wave_header(char *infile, char *outfile, short formatTag, int sampleRat
         return;
     }
 
-	printf("infile name: %s, source file length: %ld\n", infile, buf.st_size);
-	
+    printf("infile name: %s, source file length: %ld\n", infile, buf.st_size);
+
     if ((from_fd = open(infile, O_RDONLY)) == -1) {
         fprintf(stderr, "Open Error：%s\n", strerror(errno));
         return;
@@ -111,7 +111,7 @@ void add_wave_header(char *infile, char *outfile, short formatTag, int sampleRat
         printf("can not create wave header!\n");
         return;
     }
-	write(to_fd, header, sizeof(struct wave_header));
+    write(to_fd, header, sizeof(struct wave_header));
     free(header);
 
     copy_file(from_fd, to_fd);
@@ -119,7 +119,7 @@ void add_wave_header(char *infile, char *outfile, short formatTag, int sampleRat
     close(from_fd);
     close(to_fd);
 
-	return;
+    return;
 }
 
 void add_amr_header(char *infile, char *outfile)
@@ -157,14 +157,14 @@ void add_amr_header(char *infile, char *outfile)
     return;
 }
 
-int main(int argc, char **argv){
+int main(int argc, char **argv) {
 
-	int res = 0;
-	int action = 0;
+    int res = 0;
+    int action = 0;
     int sampleRate = 32000;
     short formatTag = 1, bitPerSample = 4;
-	char in[FILENAME_LENGTH] = {0};
-	char out[FILENAME_LENGTH] = {0};
+    char in[FILENAME_LENGTH] = {0};
+    char out[FILENAME_LENGTH] = {0};
 
     if(argc < 5) {
         usage(argv[0]);
@@ -181,7 +181,7 @@ int main(int argc, char **argv){
             memcpy(in, optarg, strlen(optarg));
             break;
 
-		case 'o':
+        case 'o':
             memcpy(out, optarg, strlen(optarg));
             break;
 
@@ -204,19 +204,19 @@ int main(int argc, char **argv){
         }
     }
 
-	switch(action) {
-		case 0:
-			parse_wave_file(in);
-			break;
+    switch(action) {
+    case 0:
+        parse_wave_file(in);
+        break;
 
-		case 1:
-			add_wave_header(in, out, formatTag, sampleRate, bitPerSample);
-			break;
+    case 1:
+        add_wave_header(in, out, formatTag, sampleRate, bitPerSample);
+        break;
 
-        case 2:
-            add_amr_header(in, out);
-            break;
-	}
-   
+    case 2:
+        add_amr_header(in, out);
+        break;
+    }
+
     return 0;
 }

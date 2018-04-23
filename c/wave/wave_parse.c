@@ -3,47 +3,47 @@
 
 wav_t *wav_open(char *file_name)
 {
-    wav_t *wav = NULL; 
+    wav_t *wav = NULL;
     char buffer[256];
     int  read_len = 0;
     int  offset = 0;
 
-    if(NULL == file_name){
+    if(NULL == file_name) {
         printf("file_name is NULL\n");
         return NULL;
     }
 
     wav = (wav_t *)malloc(sizeof(wav_t));
-    if(NULL == wav){
+    if(NULL == wav) {
         printf("malloc wav failedly\n");
         return NULL;
     }
     bzero(wav, sizeof(wav_t));
 
     wav->fp = fopen(file_name, "r");
-    if(NULL == wav->fp){
+    if(NULL == wav->fp) {
         printf("fopen %s failedly\n", file_name);
         free(wav);
         return NULL;
     }
 
-    //handle RIFF WAVE chunk 
+    //handle RIFF WAVE chunk
     read_len = fread(buffer, 1, 12, wav->fp);
-    if(read_len < 12){
+    if(read_len < 12) {
         printf("error wav file\n");
         wav_close(&wav);
         return NULL;
     }
 
-    if(strncasecmp("RIFF", buffer, 4)){
+    if(strncasecmp("RIFF", buffer, 4)) {
         printf("no riff, error wav file\n");
         wav_close(&wav);
         return NULL;
     }
 
-    memcpy(wav->riff.id, buffer, 4); 
+    memcpy(wav->riff.id, buffer, 4);
     wav->riff.size = *(int *)(buffer + 4);
-    if(strncasecmp("WAVE", buffer + 8, 4)){
+    if(strncasecmp("WAVE", buffer + 8, 4)) {
         printf("no wave, error wav file\n");
         wav_close(&wav);
         return NULL;
@@ -54,12 +54,12 @@ wav_t *wav_open(char *file_name)
 
     offset += 12;
 
-    while(1){
+    while(1) {
         char id_buffer[5] = {0};
         int  tmp_size = 0;
 
-        read_len = fread(buffer, 1, 8, wav->fp);  
-        if(read_len < 8){
+        read_len = fread(buffer, 1, 8, wav->fp);
+        if(read_len < 8) {
             printf("error wav file\n");
             wav_close(&wav);
             return NULL;
@@ -67,11 +67,11 @@ wav_t *wav_open(char *file_name)
         memcpy(id_buffer, buffer, 4);
         tmp_size = *(int *)(buffer + 4);
 
-        if(0 == strncasecmp("FMT", id_buffer, 3)){
+        if(0 == strncasecmp("FMT", id_buffer, 3)) {
             memcpy(wav->format.id, id_buffer, 3);
             wav->format.size = tmp_size;
             read_len = fread(buffer, 1, tmp_size, wav->fp);
-            if(read_len < tmp_size){
+            if(read_len < tmp_size) {
                 printf("error wav file\n");
                 wav_close(&wav);
                 return NULL;
@@ -82,14 +82,14 @@ wav_t *wav_open(char *file_name)
             wav->format.avg_bytes_per_sec = *(int *)(buffer + 8);
             wav->format.block_align       = *(short *)(buffer + 12);
             wav->format.bits_per_sample   = *(short *)(buffer + 14);
-        } else if(0 == strncasecmp("DATA", id_buffer, 4)){
-            memcpy(wav->data.id, id_buffer, 4); 
+        } else if(0 == strncasecmp("DATA", id_buffer, 4)) {
+            memcpy(wav->data.id, id_buffer, 4);
             wav->data.size = tmp_size;
             offset += 8;
             wav->data_offset = offset;
-            wav->data_size = wav->data.size; 
+            wav->data_size = wav->data.size;
             break;
-        } else{
+        } else {
             printf("unhandled chunk: %s, size: %d\n", id_buffer, tmp_size);
             fseek(wav->fp, tmp_size, SEEK_CUR);
         }
@@ -103,16 +103,16 @@ void wav_close(wav_t **wav)
 {
     wav_t *tmp_wav;
 
-    if(NULL == wav){
+    if(NULL == wav) {
         return ;
     }
 
     tmp_wav = *wav;
-    if(NULL == tmp_wav){
+    if(NULL == tmp_wav) {
         return ;
     }
 
-    if(NULL != tmp_wav->fp){
+    if(NULL != tmp_wav->fp) {
         fclose(tmp_wav->fp);
     }
     free(tmp_wav);
@@ -122,7 +122,7 @@ void wav_close(wav_t **wav)
 
 void wav_rewind(wav_t *wav)
 {
-    if(fseek(wav->fp, wav->data_offset, SEEK_SET) < 0){
+    if(fseek(wav->fp, wav->data_offset, SEEK_SET) < 0) {
         printf("wav rewind failedly\n");
     }
 }
@@ -141,7 +141,7 @@ void wav_dump(wav_t *wav)
 {
     printf("file length: %d\n", wav->file_size);
 
-    printf("\nRIFF WAVE Chunk\n"); 
+    printf("\nRIFF WAVE Chunk\n");
     printf("id: %s\n", wav->riff.id);
     printf("size: %d\n", wav->riff.size);
     printf("type: %s\n", wav->riff.type);
@@ -149,7 +149,7 @@ void wav_dump(wav_t *wav)
     printf("\nFORMAT Chunk\n");
     printf("id: %s\n", wav->format.id);
     printf("size: %d\n", wav->format.size);
-	printf("formattag: 0x%02x\n", wav->format.compression_code);
+    printf("formattag: 0x%02x\n", wav->format.compression_code);
 
     if(wav->format.compression_code == 0) {
         printf("compression: Unknown\n");
@@ -162,7 +162,7 @@ void wav_dump(wav_t *wav)
     } else if(wav->format.compression_code == 7) {
         printf("compression: ITU G.711 Âµ-law\n");
     } else if(wav->format.compression_code == 17) {
-        printf("compression: IMA ADPCM\n"); 
+        printf("compression: IMA ADPCM\n");
     } else if(wav->format.compression_code == 20) {
         printf("compression: ITU G.723 ADPCM (Yamaha)\n");
     } else if(wav->format.compression_code == 49) {
@@ -188,5 +188,5 @@ void wav_dump(wav_t *wav)
     printf("size: %d\n", wav->data.size);
     printf("data offset: %d\n", wav->data_offset);
 
-	return;
+    return;
 }
