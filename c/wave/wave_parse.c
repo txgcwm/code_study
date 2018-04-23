@@ -36,7 +36,7 @@ wav_t *wav_open(char *file_name)
     }
 
     if(strncasecmp("RIFF", buffer, 4)){
-        printf("error wav file\n");
+        printf("no riff, error wav file\n");
         wav_close(&wav);
         return NULL;
     }
@@ -44,7 +44,7 @@ wav_t *wav_open(char *file_name)
     memcpy(wav->riff.id, buffer, 4); 
     wav->riff.size = *(int *)(buffer + 4);
     if(strncasecmp("WAVE", buffer + 8, 4)){
-        printf("error wav file\n");
+        printf("no wave, error wav file\n");
         wav_close(&wav);
         return NULL;
     }

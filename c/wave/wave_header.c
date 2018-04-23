@@ -35,8 +35,8 @@ void *createWaveHeader(int fileLength, short formatTag, short channel, int sampl
    header->channel = channel;
    header->sampleRate = sampleRate;
    header->bitPerSample = bitPerSample;
-   header->blockAlign = 1;//(short)(header->channel * header->bitPerSample / 8);
-   header->bytePerSec = bitPerSample*sampleRate/8;//96000;//header->blockAlign * header->sampleRate;
+   header->blockAlign = (short)(header->channel * header->bitPerSample / 8);
+   header->bytePerSec = header->blockAlign * header->sampleRate; // bitPerSample*sampleRate/8; //96000;
 
 	// data
    header->data[0] = 'd';

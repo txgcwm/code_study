@@ -1,7 +1,7 @@
 LIBWAVE = libwave.a
 EXECUTABLE = wave
 
-CFLAGS = -Wall -g 
+CFLAGS = -Wall -g -m32
 CFLAGS += -I ./
 LDFLAGS += -L ./
 LDLIBS += -lwave
