@@ -1,7 +1,7 @@
 #ifndef __RTSPCLIENTSESSION_H__
 #define __RTSPCLIENTSESSION_H__
 
-#include "base/ThreadLoop.h"
+#include "ThreadLoop.h"
 
 #include "Rtsp.h"
 #include "Rtp.h"

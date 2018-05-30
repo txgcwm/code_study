@@ -1,8 +1,8 @@
-set(EXECUTABLE_OUTPUT_PATH ${OUTDIR}/transmit/rtsp/test)
+set(EXECUTABLE_OUTPUT_PATH ${OUTDIR}/test)
 
 include_directories(
-	${TOPDIR}/basics/base/include
-    ${TOPDIR}/transmit/rtsp/include
+    ${TOPDIR}/include
+    ${TOPDIR}/src
 )
 
 link_directories(
@@ -11,6 +11,6 @@ link_directories(
 
 #################################
 add_executable(TestRtspServer TestRtspServer.cpp)
-target_link_libraries(TestRtspServer rtspserver base pthread)
+target_link_libraries(TestRtspServer rtsp pthread)
 
 
