@@ -27,3 +27,8 @@ target_link_libraries(mempool_test mempool)
 #################################
 add_executable(list_test list_test.c)
 target_link_libraries(list_test mempool)
+
+
+#################################
+add_executable(data_test data_test.c)
+target_link_libraries(data_test mempool)

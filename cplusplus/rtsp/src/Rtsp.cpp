@@ -403,7 +403,7 @@ void GetSetupInfo(const char *host_name, RtspInfo cmd_port, int cseq, string &re
 	sprintf(temp, "%d", cmd_port.rtcp_ser_port);
 	strcat(out, temp);
 	sprintf(temp, ";ssrc=%u", cmd_port.ssrc);/*xxx*/
-	strcat(out, temp);	
+	strcat(out, temp);
 	strcat(out,";ttl=");
 	sprintf(ttl,"%d",(int)DEFAULT_TTL);
 	strcat(out,ttl);	

@@ -6,7 +6,7 @@ list_node_t* list_node_new(void *val)
 {
     list_node_t *self;
 
-    self = LIST_MALLOC (sizeof (list_node_t));
+    self = malloc(sizeof (list_node_t));
     if (self == NULL) {
         return NULL;
     }
@@ -22,7 +22,7 @@ list_t* list_create(void)
 {
     list_t *self;
 
-    self = LIST_MALLOC (sizeof (list_t));
+    self = malloc(sizeof (list_t));
     if (self == NULL) {
         return NULL;
     }
@@ -47,11 +47,11 @@ void list_destroy(list_t **self)
         if ((*self)->free) {
             (*self)->free(curr->val);
         }
-        LIST_FREE (curr);
+        free(curr);
         curr = next;
     }
 
-    LIST_FREE (*self);
+    free(*self);
     *self = NULL;
 
     return;
@@ -223,7 +223,7 @@ int list_remove(list_t *self, void *value)
         self->free (node->val);
     }
 
-    LIST_FREE(node);
+    free(node);
     --self->len;
 
     return (0);
@@ -232,7 +232,7 @@ int list_remove(list_t *self, void *value)
 static list_iterator_t *list_iterator_new_from_node(list_node_t *node, list_direction_t direction)
 {
     list_iterator_t *self;
-    if (!(self = LIST_MALLOC(sizeof(list_iterator_t)))) {
+    if (!(self = malloc(sizeof(list_iterator_t)))) {
         return NULL;
     }
 
@@ -266,7 +266,7 @@ void *list_iterator_next(list_iterator_t *self)
 
 void list_iterator_destroy(list_iterator_t **self)
 {
-    LIST_FREE (*self);
+    free(*self);
     *self = NULL;
 
     return;

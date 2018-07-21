@@ -273,7 +273,7 @@ void CRtspClientSession::EventHandleLoop()
 			break;
   		}
 
-		if(WaitForSleep(10000) < 0) {
+		if(WaitForSleep(10) < 0) {
 			break;
 		}
 	}
