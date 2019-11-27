@@ -1,0 +1,223 @@
+{
+	"data": [{
+		"directors": ["托德·菲利普斯"],
+		"rate": "8.8",
+		"cover_x": 4050,
+		"star": "45",
+		"title": "小丑",
+		"url": "https:\/\/movie.douban.com\/subject\/27119724\/",
+		"casts": ["杰昆·菲尼克斯", "罗伯特·德尼罗", "马克·马龙", "莎姬·贝兹", "谢伊·惠格姆"],
+		"cover": "https://img3.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2567198874.jpg",
+		"id": "27119724",
+		"cover_y": 6000
+	}, {
+		"directors": ["克里斯·巴克", "珍妮弗·李"],
+		"rate": "7.3",
+		"cover_x": 1080,
+		"star": "35",
+		"title": "冰雪奇缘2",
+		"url": "https:\/\/movie.douban.com\/subject\/25887288\/",
+		"casts": ["克里斯汀·贝尔", "伊迪娜·门泽尔", "乔什·加德", "乔纳森·格罗夫", "杰森·雷特"],
+		"cover": "https://img3.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2572847101.jpg",
+		"id": "25887288",
+		"cover_y": 1543
+	}, {
+		"directors": ["朱塞佩·托纳多雷"],
+		"rate": "9.3",
+		"cover_x": 1100,
+		"star": "45",
+		"title": "海上钢琴师",
+		"url": "https:\/\/movie.douban.com\/subject\/1292001\/",
+		"casts": ["蒂姆·罗斯", "普路特·泰勒·文斯", "比尔·努恩", "克兰伦斯·威廉姆斯三世", "梅兰尼·蒂埃里"],
+		"cover": "https://img9.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2574551676.jpg",
+		"id": "1292001",
+		"cover_y": 1578
+	}, {
+		"directors": ["曾国祥"],
+		"rate": "8.4",
+		"cover_x": 5906,
+		"star": "40",
+		"title": "少年的你",
+		"url": "https:\/\/movie.douban.com\/subject\/30166972\/",
+		"casts": ["周冬雨", "易烊千玺", "尹昉", "周也", "吴越"],
+		"cover": "https://img3.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2572166063.jpg",
+		"id": "30166972",
+		"cover_y": 8268
+	}, {
+		"directors": ["弗兰克·德拉邦特"],
+		"rate": "9.7",
+		"cover_x": 2000,
+		"star": "50",
+		"title": "肖申克的救赎",
+		"url": "https:\/\/movie.douban.com\/subject\/1292052\/",
+		"casts": ["蒂姆·罗宾斯", "摩根·弗里曼", "鲍勃·冈顿", "威廉姆·赛德勒", "克兰西·布朗"],
+		"cover": "https://img3.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p480747492.jpg",
+		"id": "1292052",
+		"cover_y": 2963
+	}, {
+		"directors": ["饺子"],
+		"rate": "8.5",
+		"cover_x": 5594,
+		"star": "45",
+		"title": "哪吒之魔童降世",
+		"url": "https:\/\/movie.douban.com\/subject\/26794435\/",
+		"casts": ["吕艳婷", "囧森瑟夫", "瀚墨", "陈浩", "绿绮"],
+		"cover": "https://img3.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2563780504.jpg",
+		"id": "26794435",
+		"cover_y": 8268
+	}, {
+		"directors": ["文牧野"],
+		"rate": "9.0",
+		"cover_x": 2810,
+		"star": "45",
+		"title": "我不是药神",
+		"url": "https:\/\/movie.douban.com\/subject\/26752088\/",
+		"casts": ["徐峥", "王传君", "周一围", "谭卓", "章宇"],
+		"cover": "https://img9.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2561305376.jpg",
+		"id": "26752088",
+		"cover_y": 3937
+	}, {
+		"directors": ["罗兰·艾默里奇"],
+		"rate": "7.7",
+		"cover_x": 2416,
+		"star": "40",
+		"title": "决战中途岛",
+		"url": "https:\/\/movie.douban.com\/subject\/26786669\/",
+		"casts": ["艾德·斯克林", "帕特里克·威尔森", "伍迪·哈里森", "卢克·伊万斯", "丹尼斯·奎德"],
+		"cover": "https://img3.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2573582192.jpg",
+		"id": "26786669",
+		"cover_y": 3375
+	}, {
+		"directors": ["詹姆斯·卡梅隆"],
+		"rate": "9.4",
+		"cover_x": 2015,
+		"star": "45",
+		"title": "泰坦尼克号",
+		"url": "https:\/\/movie.douban.com\/subject\/1292722\/",
+		"casts": ["莱昂纳多·迪卡普里奥", "凯特·温丝莱特", "比利·赞恩", "凯西·贝茨", "弗兰西丝·费舍"],
+		"cover": "https://img3.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p457760035.jpg",
+		"id": "1292722",
+		"cover_y": 3000
+	}, {
+		"directors": ["吕克·贝松"],
+		"rate": "9.4",
+		"cover_x": 658,
+		"star": "45",
+		"title": "这个杀手不太冷",
+		"url": "https:\/\/movie.douban.com\/subject\/1295644\/",
+		"casts": ["让·雷诺", "娜塔莉·波特曼", "加里·奥德曼", "丹尼·爱罗", "彼得·阿佩尔"],
+		"cover": "https://img3.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p511118051.jpg",
+		"id": "1295644",
+		"cover_y": 980
+	}, {
+		"directors": ["宫崎骏"],
+		"rate": "9.3",
+		"cover_x": 1080,
+		"star": "45",
+		"title": "千与千寻",
+		"url": "https:\/\/movie.douban.com\/subject\/1291561\/",
+		"casts": ["柊瑠美", "入野自由", "夏木真理", "菅原文太", "中村彰男"],
+		"cover": "https://img1.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2557573348.jpg",
+		"id": "1291561",
+		"cover_y": 1560
+	}, {
+		"directors": ["郭帆"],
+		"rate": "7.9",
+		"cover_x": 1786,
+		"star": "40",
+		"title": "流浪地球",
+		"url": "https:\/\/movie.douban.com\/subject\/26266893\/",
+		"casts": ["屈楚萧", "吴京", "李光洁", "吴孟达", "赵今麦"],
+		"cover": "https://img3.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2545472803.jpg",
+		"id": "26266893",
+		"cover_y": 2500
+	}, {
+		"directors": ["罗伯特·泽米吉斯"],
+		"rate": "9.5",
+		"cover_x": 2445,
+		"star": "50",
+		"title": "阿甘正传",
+		"url": "https:\/\/movie.douban.com\/subject\/1292720\/",
+		"casts": ["汤姆·汉克斯", "罗宾·怀特", "加里·西尼斯", "麦凯尔泰·威廉逊", "莎莉·菲尔德"],
+		"cover": "https://img3.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2559011361.jpg",
+		"id": "1292720",
+		"cover_y": 3229
+	}, {
+		"directors": ["克里斯托弗·诺兰"],
+		"rate": "9.3",
+		"cover_x": 2229,
+		"star": "45",
+		"title": "盗梦空间",
+		"url": "https:\/\/movie.douban.com\/subject\/3541415\/",
+		"casts": ["莱昂纳多·迪卡普里奥", "约瑟夫·高登-莱维特", "艾伦·佩吉", "汤姆·哈迪", "渡边谦"],
+		"cover": "https://img3.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p513344864.jpg",
+		"id": "3541415",
+		"cover_y": 3300
+	}, {
+		"directors": ["陈凯歌"],
+		"rate": "9.6",
+		"cover_x": 600,
+		"star": "50",
+		"title": "霸王别姬",
+		"url": "https:\/\/movie.douban.com\/subject\/1291546\/",
+		"casts": ["张国荣", "张丰毅", "巩俐", "葛优", "英达"],
+		"cover": "https://img3.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2561716440.jpg",
+		"id": "1291546",
+		"cover_y": 889
+	}, {
+		"directors": ["王维明"],
+		"rate": "5.3",
+		"cover_x": 6732,
+		"star": "25",
+		"title": "大约在冬季",
+		"url": "https:\/\/movie.douban.com\/subject\/30362186\/",
+		"casts": ["马思纯", "霍建华", "魏大勋", "张瑶", "林柏宏"],
+		"cover": "https://img3.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2571441805.jpg",
+		"id": "30362186",
+		"cover_y": 9921
+	}, {
+		"directors": ["拜伦·霍华德", "瑞奇·摩尔", "杰拉德·布什"],
+		"rate": "9.2",
+		"cover_x": 1418,
+		"star": "45",
+		"title": "疯狂动物城",
+		"url": "https:\/\/movie.douban.com\/subject\/25662329\/",
+		"casts": ["金妮弗·古德温", "杰森·贝特曼", "伊德里斯·艾尔巴", "珍妮·斯蕾特", "内特·托伦斯"],
+		"cover": "https://img1.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2315672647.jpg",
+		"id": "25662329",
+		"cover_y": 2005
+	}, {
+		"directors": ["涅提·蒂瓦里"],
+		"rate": "9.0",
+		"cover_x": 4500,
+		"star": "45",
+		"title": "摔跤吧！爸爸",
+		"url": "https:\/\/movie.douban.com\/subject\/26387939\/",
+		"casts": ["阿米尔·汗", "法缇玛·萨那·纱卡", "桑亚·玛荷塔", "阿帕尔夏克提·库拉那", "沙克希·坦沃"],
+		"cover": "https://img3.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2457983084.jpg",
+		"id": "26387939",
+		"cover_y": 6300
+	}, {
+		"directors": ["李仁港"],
+		"rate": "6.3",
+		"cover_x": 3000,
+		"star": "30",
+		"title": "攀登者",
+		"url": "https:\/\/movie.douban.com\/subject\/30413052\/",
+		"casts": ["吴京", "章子怡", "井柏然", "张译", "胡歌"],
+		"cover": "https://img3.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p2568577681.jpg",
+		"id": "30413052",
+		"cover_y": 4200
+	}, {
+		"directors": ["拉吉库马尔·希拉尼"],
+		"rate": "9.2",
+		"cover_x": 3030,
+		"star": "45",
+		"title": "三傻大闹宝莱坞",
+		"url": "https:\/\/movie.douban.com\/subject\/3793023\/",
+		"casts": ["阿米尔·汗", "卡琳娜·卡普尔", "马达范", "沙尔曼·乔希", "奥米·瓦依达"],
+		"cover": "https://img3.doubanio.com\/view\/photo\/s_ratio_poster\/public\/p579729551.jpg",
+		"id": "3793023",
+		"cover_y": 4364
+	}]
+}
